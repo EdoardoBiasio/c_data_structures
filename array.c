@@ -186,7 +186,7 @@ int array_predecessor(array_t* array, int element, void *out) {
     return prev;
 }
 
-int array_copy(array_t* src, array_t* dest) {
+int array_copy(array_t* dest, array_t* src) {
     if (!src || !dest)
 	return -1;
     dest->data = calloc(src->type_size, src->capacity);
@@ -198,6 +198,40 @@ int array_copy(array_t* src, array_t* dest) {
     return 0;
 }
 
+int array_concat(array_t* dest, array_t* src) {
+    size_t new_len;
+    if (!dest || !src || dest->type_size != src->type_size)
+	return -1;
+    new_len = dest->len + src->len;
+    if (new_len > dest->capacity) {
+	dest->capacity = new_len;
+	dest->data = realloc(dest->data, dest->capacity * dest->type_size);
+    }
+
+    memcpy((char*) dest->data + dest->len * dest->type_size, src->data, src->len * src->type_size);
+    dest->len = new_len;
+    return 0;
+}
+
+void* array_to_carray_consume(array_t* src, int* out_len) {
+    void* out;
+    if (!src)
+	return NULL;
+    out = src->data;
+    src->data = NULL;
+    if (out_len)
+	*out_len = src->len;
+    array_close(src);
+    return out;
+}
+
+void* array_to_carray(array_t* src, int* out_len) {
+    if (!src)
+	return NULL;
+    if (out_len)
+	*out_len = src->len;
+    return src->data;
+}
 
 array_type_implementation(char, i8)
 array_type_implementation(unsigned char, u8)

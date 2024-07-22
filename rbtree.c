@@ -2,6 +2,31 @@
 #include <stdlib.h>
 #include <string.h>
 
+void rb_tree_node_free(rb_tree_node_t* node, void* data) {
+    if (node) {
+	rb_tree_node_ptr(node)->left = NULL;
+	rb_tree_node_ptr(node)->right = NULL;
+	if (rb_tree_node_ptr(node)->p) {
+	    if (rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->left == node)
+		rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->left = NULL;
+	    else
+		rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->right = NULL;
+	}
+	
+	free(rb_tree_node_ptr(node));
+    }
+}
+
+int rb_tree_close(rb_tree_t* tree) {
+    if (!tree)
+	return -1;
+    rb_tree_visit_post_order(tree->root, rb_tree_node_free, NULL);
+    tree->root = NULL;
+    tree->type_size = tree->size = 0;
+    tree->cmp = NULL;
+    return 0;
+}
+
 rb_tree_node_t* rb_tree_node_alloc(size_t type_size, void* data) {
     rb_tree_node_t* new;
     if (!data)
@@ -86,10 +111,11 @@ void rb_tree_insert_fix(rb_tree_t* tree, rb_tree_node_t* node) {
 		rb_tree_node_set_black(c);
 		rb_tree_node_set_color(tree, rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p, rb_tree_red);
 		node = rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p;
-	    } else if (node == rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->right) {
-		node = rb_tree_node_ptr(node)->p;
-		rb_tree_left_rotate(tree, node);
 	    } else {
+		if (node == rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->right) {
+		    node = rb_tree_node_ptr(node)->p;
+		    rb_tree_left_rotate(tree, node);
+		} 
 		rb_tree_node_set_color(tree, rb_tree_node_ptr(node)->p, rb_tree_black);
 		rb_tree_node_set_color(tree, rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p, rb_tree_red);
 		rb_tree_right_rotate(tree, rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p);
@@ -102,10 +128,11 @@ void rb_tree_insert_fix(rb_tree_t* tree, rb_tree_node_t* node) {
 		rb_tree_node_set_black(c);
 		rb_tree_node_set_color(tree, rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p, rb_tree_red);
 		node = rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p;
-	    } else if (node == rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->left) {
-		node = rb_tree_node_ptr(node)->p;
-		rb_tree_right_rotate(tree, node);
 	    } else {
+		if (node == rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->left) {
+		    node = rb_tree_node_ptr(node)->p;
+		    rb_tree_right_rotate(tree, node);
+		}
 		rb_tree_node_set_color(tree, rb_tree_node_ptr(node)->p, rb_tree_black);
 		rb_tree_node_set_color(tree, rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p, rb_tree_red);
 		rb_tree_left_rotate(tree, rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->p);
@@ -137,10 +164,12 @@ int rb_tree_insert(rb_tree_t* tree, void* element) {
 	    rb_tree_node_ptr(p)->left = new;
 	rb_tree_node_ptr(new)->p = p;
 	rb_tree_insert_fix(tree, new);
+	tree->size++;
     } else {
 	new = rb_tree_node_alloc(tree->type_size, element);
 	tree->root = new;
 	rb_tree_node_set_black(tree->root);
+	tree->size++;
 	return 0;
     }
     
@@ -153,6 +182,14 @@ rb_tree_node_t* rb_tree_min_node(rb_tree_t* tree, rb_tree_node_t* node) {
     }
     return node;
 }
+
+rb_tree_node_t* rb_tree_max_node(rb_tree_t* tree, rb_tree_node_t* node) {
+    while (rb_tree_node_ptr(node)->right) {
+	node = rb_tree_node_ptr(node)->right;
+    }
+    return node;
+}
+
 
 rb_tree_node_t* rb_tree_search_node(rb_tree_t* tree, rb_tree_node_t* node, void* element) {
     int res;
@@ -173,6 +210,16 @@ rb_tree_node_t* rb_tree_successor_node(rb_tree_t* tree, rb_tree_node_t* node) {
 	return rb_tree_min_node(tree, rb_tree_node_ptr(node)->right);
     }
     while (rb_tree_node_ptr(node)->p && rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->right == node) {
+	node = rb_tree_node_ptr(node)->p;
+    }
+    return rb_tree_node_ptr(node)->p;
+}
+
+rb_tree_node_t* rb_tree_predecessor_node(rb_tree_t* tree, rb_tree_node_t* node) {
+    if (rb_tree_node_ptr(node)->left) {
+	return rb_tree_max_node(tree, rb_tree_node_ptr(node)->left);
+    }
+    while (rb_tree_node_ptr(node)->p && rb_tree_node_ptr(rb_tree_node_ptr(node)->p)->left == node) {
 	node = rb_tree_node_ptr(node)->p;
     }
     return rb_tree_node_ptr(node)->p;
@@ -289,7 +336,7 @@ int rb_tree_delete(rb_tree_t* tree, void* element) {
 	rb_tree_delete_fix(tree, subtree);
     }
     free(rb_tree_node_ptr(todel));
-    
+    tree->size--;
     return 0;
 }
 void rb_tree_print_func(rb_tree_node_t* node, void* data) {
@@ -309,4 +356,126 @@ int rb_tree_visit_in_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* no
 	rb_tree_visit_in_order(rb_tree_node_ptr(node)->right, func, data);
     }
     return 0;
+}
+int rb_tree_visit_pre_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data) {
+    if (node) {
+	func(node, data);
+	rb_tree_visit_pre_order(rb_tree_node_ptr(node)->left, func, data);
+	rb_tree_visit_pre_order(rb_tree_node_ptr(node)->right, func, data);
+    }
+    return 0;
+}
+int rb_tree_visit_post_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data) {
+    if (node) {
+	rb_tree_visit_post_order(rb_tree_node_ptr(node)->left, func, data);
+	rb_tree_visit_post_order(rb_tree_node_ptr(node)->right, func, data);
+	func(node, data);
+    }
+    return 0;
+}
+
+void* rb_tree_min_ref(rb_tree_t* tree, rb_tree_node_t* node) {
+    rb_tree_node_t* t;
+    if (!tree || !node)
+	return NULL;
+    t = rb_tree_min_node(tree, node);
+    if (!t)
+	return NULL;
+    return rb_tree_node_data(t);
+}
+
+void* rb_tree_max_ref(rb_tree_t* tree, rb_tree_node_t* node) {
+    rb_tree_node_t* t;
+    if (!tree || !node)
+	return NULL;
+    t = rb_tree_max_node(tree, node);
+    if (!t)
+	return NULL;
+    return rb_tree_node_data(t);
+}
+
+void* rb_tree_successor_ref(rb_tree_t* tree, rb_tree_node_t* node) {
+    rb_tree_node_t* t;
+    if (!tree || !node)
+	return NULL;
+    t = rb_tree_successor_node(tree, node);
+    if (!t)
+	return NULL;
+    return rb_tree_node_data(t);
+}
+
+void* rb_tree_predecessor_ref(rb_tree_t* tree, rb_tree_node_t* node) {
+    rb_tree_node_t* t;
+    if (!tree || !node)
+	return NULL;
+    t = rb_tree_predecessor_node(tree, node);
+    if (!t)
+	return NULL;
+    return rb_tree_node_data(t);
+}
+
+int rb_tree_min(rb_tree_t* tree, rb_tree_node_t* node, void* out) {
+    rb_tree_node_t* t;
+    if (!tree || !node || !out)
+	return -1;
+    t = rb_tree_min_node(tree, node);
+    if (!t)
+	return -1;
+    memcpy(out, rb_tree_node_data(t), tree->type_size);
+    return 0;
+}
+
+int rb_tree_max(rb_tree_t* tree, rb_tree_node_t* node, void* out) {
+    rb_tree_node_t* t;
+    if (!tree || !node || !out)
+	return -1;
+    t = rb_tree_max_node(tree, node);
+    if (!t)
+	return -1;
+    memcpy(out, rb_tree_node_data(t), tree->type_size);
+    return 0;
+}
+
+int rb_tree_successor(rb_tree_t* tree, rb_tree_node_t* node, void* out) {
+    rb_tree_node_t* t;
+    if (!tree || !node || !out)
+	return -1;
+    t = rb_tree_successor_node(tree, node);
+    if (!t)
+	return -1;
+    memcpy(out, rb_tree_node_data(t), tree->type_size);
+    return 0;
+}
+
+int rb_tree_predecessor(rb_tree_t* tree, rb_tree_node_t* node, void* out) {
+    rb_tree_node_t* t;
+    if (!tree || !node || !out)
+	return -1;
+    t = rb_tree_predecessor_node(tree, node);
+    if (!t)
+	return -1;
+    memcpy(out, rb_tree_node_data(t), tree->type_size);
+    return 0;
+}
+
+int rb_tree_search(rb_tree_t* tree, rb_tree_node_t* node, void* element, void* out) {
+    rb_tree_node_t* t;
+    if (!tree || !node || !element || !out)
+	return -1;
+    t = rb_tree_search_node(tree, node, element);
+    if (!t)
+	return -1;
+    memcpy(out, rb_tree_node_data(t), tree->type_size);
+    return 0;
+}
+
+void* rb_tree_search_ref(rb_tree_t* tree, rb_tree_node_t* node, void* element) {
+    rb_tree_node_t* t;
+    if (!tree || !node || !element)
+	return NULL;
+    t = rb_tree_search_node(tree, node, element);
+    if (!t)
+	return NULL;
+    return rb_tree_node_data(t);
+
 }

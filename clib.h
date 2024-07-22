@@ -23,7 +23,10 @@ int array_min(array_t* array, void* out);
 int array_max(array_t* array, void* out);
 int array_successor(array_t* array, int element, void *out);
 int array_predecessor(array_t* array, int element, void *out);
-int array_copy(array_t* src, array_t* dest);
+int array_copy(array_t* dest, array_t* src);
+int array_concat(array_t* dest, array_t* src);
+void* array_to_carray_consume(array_t* src, int* out_len);
+void* array_to_carray(array_t* src, int* out_len);
 
 int array_quicksort(array_t* array, size_t lo, size_t hi);
 int array_insertionsort(array_t* array);
@@ -668,19 +671,117 @@ typedef binary_search_tree_t rb_tree_t;
 #define rb_tree_node_data(node) lbinary_tree_node_data(rb_tree_node_ptr(node))
 
 #define rb_tree_init(tree, ts, cmp) lbinary_tree_init(tree, ts, cmp)
-#define rb_tree_close(tree) lbinary_tree_close(tree)
+int rb_tree_close(rb_tree_t* tree);
 int rb_tree_visit_in_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data);
+int rb_tree_visit_pre_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data);
+int rb_tree_visit_post_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data);
 void rb_tree_print_func(rb_tree_node_t* node, void* data);
-#define rb_tree_visit_pre_order(node, func, data) lbinary_tree_visit_pre_order(node, func, data)
-#define rb_tree_visit_post_order(node, func, data) lbinary_tree_visit_post_order(node, func, data)
 #define rb_tree_print_in_order(node, print) rb_tree_visit_in_order(node, rb_tree_print_func, print)
-#define rb_tree_print_pre_order(node, print) lbinary_tree_print_pre_order(node, print)
-#define rb_tree_print_post_order(node, print) lbinary_tree_print_post_order(node, print)
-
+#define rb_tree_print_pre_order(node, print) rb_tree_visit_pre_order(node, rb_tree_print_func, print)
+#define rb_tree_print_post_order(node, print) rb_tree_visit_post_order(node, rb_tree_print_func, print)
 int rb_tree_insert(rb_tree_t* tree, void* element);
 int rb_tree_delete(rb_tree_t* tree, void* element);
+int rb_tree_search(rb_tree_t* tree, rb_tree_node_t* node, void* element, void* out);
+void* rb_tree_search_ref(rb_tree_t* tree, rb_tree_node_t* node, void* element);
 rb_tree_node_t* rb_tree_search_node(rb_tree_t* tree, rb_tree_node_t* node, void* element);
 rb_tree_node_t* rb_tree_min_node(rb_tree_t* tree, rb_tree_node_t* node);
+rb_tree_node_t* rb_tree_max_node(rb_tree_t* tree, rb_tree_node_t* node);
 rb_tree_node_t* rb_tree_successor_node(rb_tree_t* tree, rb_tree_node_t* node);
+rb_tree_node_t* rb_tree_predecessor_node(rb_tree_t* tree, rb_tree_node_t* node);
+void* rb_tree_min_ref(rb_tree_t* tree, rb_tree_node_t* node);
+void* rb_tree_max_ref(rb_tree_t* tree, rb_tree_node_t* node);
+void* rb_tree_successor_ref(rb_tree_t* tree, rb_tree_node_t* node);
+void* rb_tree_predecessor_ref(rb_tree_t* tree, rb_tree_node_t* node);
+int rb_tree_min(rb_tree_t* tree, rb_tree_node_t* node, void* out);
+int rb_tree_max(rb_tree_t* tree, rb_tree_node_t* node, void* out);
+int rb_tree_successor(rb_tree_t* tree, rb_tree_node_t* node, void* out);
+int rb_tree_predecessor(rb_tree_t* tree, rb_tree_node_t* node, void* out);
+
+typedef struct heap_s {
+    void* data;
+    size_t size, capacity, height, type_size;
+    int (*cmp)(void*, void*);
+} heap_t;
+
+typedef heap_t min_heap_t;
+typedef heap_t max_heap_t;
+#define min_heap_type 0
+#define max_heap_type 1
+
+#define heap_left(i) ((i * 2) + 1)
+#define heap_right(i) ((i * 2) + 2)
+#define heap_parent(i) (int)((i - 1) / 2)
+
+int heap_init(heap_t* heap, size_t height, size_t type_size, int (*cmp)(void*, void*), int type);
+int heap_close(heap_t* heap);
+int heap_insert(heap_t* heap, void* data, int type);
+int heap_pop_root(heap_t* heap, void* out, int type);
+int heap_peek_root(heap_t* heap, void* out, int type);
+void* heap_peek_root_ref(heap_t* heap, int type);
+int heap_init_from_carray(heap_t* heap, void* array, int n, int type_size, int (*cmp)(void*, void*), int type);
+int heap_init_from_array(heap_t* heap, array_t* array, int type);
+
+#define max_heap_init(heap, height, ts, cmp) heap_init(heap, height, ts, cmp, max_heap_type)
+#define max_heap_close(heap) heap_close(heap)
+#define max_heap_insert(heap, data) heap_insert(heap, data, max_heap_type)
+#define max_heap_pop_max(heap, out) heap_pop_root(heap, out, max_heap_type)
+#define max_heap_max(heap, out) heap_peek_root(heap, out, max_heap_type)
+#define max_heap_max_ref(heap) heap_peek_root_ref(heap, max_heap_type)
+#define max_heap_init_from_carray(heap, arr, n, ts, cmp) heap_init_from_carray(heap, arr, n, ts, cmp, max_heap_type)
+#define max_heap_init_from_array(heap, arr) heap_init_from_array(heap, arr, max_heap_type)
+
+#define min_heap_init(heap, height, ts, cmp) heap_init(heap, height, ts, cmp, min_heap_type)
+#define min_heap_close(heap) heap_close(heap)
+#define min_heap_insert(heap, data) heap_insert(heap, data, min_heap_type)
+#define min_heap_pop_max(heap, out) heap_pop_root(heap, out, min_heap_type)
+#define min_heap_max(heap, out) heap_peek_root(heap, out, min_heap_type)
+#define min_heap_max_ref(heap) heap_peek_root_ref(heap, min_heap_type)
+#define min_heap_init_from_carray(heap, arr, n, ts, cmp) heap_init_from_carray(heap, arr, n, ts, cmp, min_heap_type)
+#define min_heap_init_from_array(heap, arr) heap_init_from_array(heap, arr, min_heap_type)
+
+int array_heap_sort(array_t* array);
+
+#define graph_oriented (1 << 0)
+#define graph_connected (1 << 1)
+#define graph_completely_connected (1 << 2)
+
+#define graph_vertex_visited (1 << 0)
+
+typedef struct graph_vertex_s {
+    unsigned int tag;
+    unsigned int flags;
+    unsigned int dist;
+    /* vertex data */
+    
+} graph_vertex_t;
+
+typedef struct mgraph_s {
+    void* adjacency_matrix;
+    array_t vertices;
+    size_t vertex_data_size;
+    int flags;
+    int (*cmp)(void*, void*);
+} mgraph_t;
+
+typedef long int mgraph_node_t;
+#define mgraph_node_invalid -1
+#define mgraph_vertex_tag(gptr, i) (((graph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->tag)
+#define mgraph_vertex_flags(gptr, i) (((graph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->flags)
+#define mgraph_vertex_dist(gptr, i) (((graph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->dist)
+#define mgraph_vertex_data(gptr, i) (((char*)array_at_ref(&(gptr)->vertices, i)) + sizeof(graph_vertex_t))
+
+int mgraph_init(mgraph_t* g, int vertex_size, int flags, int (*cmp)(void*, void*));
+int mgraph_close(mgraph_t* g);
+mgraph_node_t mgraph_add_vertex(mgraph_t* g, void* vertex);
+mgraph_node_t mgraph_add_vertices_carray(mgraph_t* g, void* vertices, int n);
+mgraph_node_t mgraph_add_vertices_array(mgraph_t* g, array_t* vertices);
+int mgraph_add_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r);
+int mgraph_remove_vertex(mgraph_t* g, mgraph_node_t v);
+int mgraph_remove_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r);
+int mgraph_connected(mgraph_t* g, mgraph_node_t l, mgraph_node_t r);
+int mgraph_breadth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_node_t, void*), void* data);
+int mgraph_depth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_node_t, void*), void* data);
+void mgraph_print_adjacency_matrix(mgraph_t* g, void (*print)(void*));
+
 
 #endif /* CLIB_H */
