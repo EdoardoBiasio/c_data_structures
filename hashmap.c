@@ -123,3 +123,15 @@ void* oh_hashmap_search_ref(oh_hashmap_t* map, void* key) {
 }
 
 
+oh_hashmap_type_implementation(char, i8)
+oh_hashmap_type_implementation(unsigned char, u8)
+oh_hashmap_type_implementation(short, i16)
+oh_hashmap_type_implementation(unsigned short, u16)
+oh_hashmap_type_implementation(int, i32)
+oh_hashmap_type_implementation(unsigned int, u32)
+oh_hashmap_type_implementation(long, i64)
+oh_hashmap_type_implementation(unsigned long, u64)
+oh_hashmap_type_implementation(char, char)
+oh_hashmap_type_implementation(float, f32)
+oh_hashmap_type_implementation(double, f64)
+

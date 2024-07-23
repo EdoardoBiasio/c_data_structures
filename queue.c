@@ -27,6 +27,12 @@ int lqueue_peek(lqueue_t* queue, void* out) {
     return 0;
 }
 
+void* lqueue_peek_ref(lqueue_t* queue) {
+   if (!queue || lqueue_is_empty(queue))
+	return NULL;
+   return list_node_data(queue->elements.head);
+}
+
 int lqueue_enqueue(lqueue_t* queue, void* in) {
     if (!queue || !in)
 	return -1;
@@ -73,10 +79,16 @@ int aqueue_is_empty(aqueue_t* queue) {
 int aqueue_peek(aqueue_t* queue, void* out) {
     if (!queue)
 	return -1;
-    if (!aqueue_is_empty(queue))
+    if (aqueue_is_empty(queue))
 	return -1;
     memcpy(out, (char*)queue->data + queue->head * queue->type_size, queue->type_size);
     return 0;
+}
+
+void* aqueue_peek_ref(aqueue_t* queue) {
+    if (!queue || aqueue_is_empty(queue))
+	return NULL;
+    return (char*) queue->data + queue->head * queue->type_size;
 }
 
 void aqueue_realloc(aqueue_t* queue) {
@@ -130,4 +142,28 @@ void aqueue_print(aqueue_t* queue, void (*print)(void*)) {
 	print((char*) queue->data + idx * queue->type_size);
     }
 }
+
+lqueue_type_implementation(char, i8)
+lqueue_type_implementation(unsigned char, u8)
+lqueue_type_implementation(short, i16)
+lqueue_type_implementation(unsigned short, u16)
+lqueue_type_implementation(int, i32)
+lqueue_type_implementation(unsigned int, u32)
+lqueue_type_implementation(long, i64)
+lqueue_type_implementation(unsigned long, u64)
+lqueue_type_implementation(char, char)
+lqueue_type_implementation(float, f32)
+lqueue_type_implementation(double, f64)
+    
+aqueue_type_implementation(char, i8)
+aqueue_type_implementation(unsigned char, u8)
+aqueue_type_implementation(short, i16)
+aqueue_type_implementation(unsigned short, u16)
+aqueue_type_implementation(int, i32)
+aqueue_type_implementation(unsigned int, u32)
+aqueue_type_implementation(long, i64)
+aqueue_type_implementation(unsigned long, u64)
+aqueue_type_implementation(char, char)
+aqueue_type_implementation(float, f32)
+aqueue_type_implementation(double, f64)
 

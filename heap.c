@@ -204,3 +204,7 @@ int array_heap_sort(array_t* array) {
     return 0;
 }
 
+int heap_is_empty(heap_t* heap) {
+    return heap->size == 0;
+}
+

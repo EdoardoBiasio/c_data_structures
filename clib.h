@@ -33,111 +33,8 @@ int array_insertionsort(array_t* array);
 int array_mergesort(array_t* array, int p, int r);
 int array_selectionsort(array_t* array);
 
-
 #define array_push_front(a, el) array_insert(a, 0, el)
 #define array_push_back(a, el) array_insert(a, (a)->len, el)
-
-
-#define array_type_definition(type, name)				\
-    int array_##name##_init(array_t* array, int start_capacity);	\
-    int array_##name##_close(array_t* array);				\
-    int array_##name##_insert(array_t* array, int idx, type element);	\
-    type array_##name##_at(array_t* array, int idx);			\
-    type* array_##name##_at_ref(array_t* array, int idx);		\
-    int array_##name##_delete(array_t* array, type element);		\
-    int array_##name##_delete_index(array_t* array, int idx);		\
-    int array_##name##_print(array_t* array);				\
-    int array_##name##_search(array_t* array, type element);		\
-    int array_##name##_min(array_t* array, type* out);			\
-    int array_##name##_max(array_t* array, type* out);			\
-    int array_##name##_successor(array_t* array, int element, type* out); \
-    int array_##name##_predecessor(array_t* array, int element, type* out);
-#define util_type_definition(type, name) \
-    int cmp_##name(void* key, void* el); \
-    void print_##name(void* el); 
-
-#define util_type_implementation(type, name) \
-        int cmp_##name(void* key, void* el) {				\
-	type l, r;							\
-	l = *(type*) key;						\
-	r = *(type*) el;						\
-	if (l < r)							\
-	    return -1;							\
-	if (l > r)							\
-	    return 1;							\
-	return 0;							\
-    }									
-
-#define array_type_implementation(type, name)				\
-    int array_##name##_init(array_t* array, int start_capacity) {	\
-	return array_init(array, sizeof(type), start_capacity, cmp_##name); \
-    }									\
-    int array_##name##_close(array_t* array) {				\
-	return array_close(array);					\
-    }									\
-    int array_##name##_insert(array_t* array, int idx, type element) {	\
-	type n = element;						\
-	return array_insert(array, idx, &n);				\
-    }									\
-    type array_##name##_at(array_t* array, int idx) {			\
-	type res;							\
-	array_at(array, idx, &res);					\
-	return res;							\
-    }									\
-    type* array_##name##_at_ref(array_t* array, int idx) {		\
-	return array_at_ref(array, idx);				\
-    }									\
-    int array_##name##_delete(array_t* array, type element) {		\
-	type n = element;						\
-	return array_delete(array, &n);					\
-    }									\
-    int array_##name##_delete_index(array_t* array, int idx) {		\
-	return array_delete_index(array, idx);				\
-    }									\
-    int array_##name##_print(array_t* array) {				\
-	return array_print(array, print_##name);			\
-    }									\
-    int array_##name##_search(array_t* array, type element) {		\
-	type key = element;						\
-	return array_search(array, &key, NULL);				\
-    }									\
-    int array_##name##_min(array_t* array, type* out) {			\
-	return array_min(array, (void*) out);				\
-    }									\
-    int array_##name##_max(array_t* array, type* out) {			\
-	return array_max(array, (void*) out);				\
-    }									\
-    int array_##name##_successor(array_t* array, int element, type* out) { \
-	return array_successor(array, element, (void*) out);			\
-    }									\
-    int array_##name##_predecessor(array_t* array, int element, type* out) { \
-	return array_predecessor(array, element, (void*) out);		\
-    }
-
-
-array_type_definition(char, i8)
-array_type_definition(unsigned char, u8)
-array_type_definition(short, i16)
-array_type_definition(unsigned short, u16)
-array_type_definition(int, i32)
-array_type_definition(unsigned int, u32)
-array_type_definition(long, i64)
-array_type_definition(unsigned long, u64)
-array_type_definition(char, char)
-array_type_definition(float, f32)
-array_type_definition(double, f64)
-
-util_type_definition(char, i8)
-util_type_definition(unsigned char, u8)
-util_type_definition(short, i16)
-util_type_definition(unsigned short, u16)
-util_type_definition(int, i32)
-util_type_definition(unsigned int, u32)
-util_type_definition(long, i64)
-util_type_definition(unsigned long, u64)
-util_type_definition(char, char)
-util_type_definition(float, f32)
-util_type_definition(double, f64)
 
 typedef array_t sorted_array_t;
 #define sorted_array_init(a, ts, cap, cmp) array_init((array_t*)a, ts, cap, cmp)
@@ -148,57 +45,6 @@ int sorted_array_insert(sorted_array_t* array, void* element);
 int sorted_array_bsearch(sorted_array_t* array, void* key, void* out);
 #define sorted_array_print(a, print) array_print((array_t*)a, print)
 int sorted_array_from_array(sorted_array_t* dest, array_t* src);
-
-#define sorted_array_type_definition(type, name)			\
-    int sorted_array_##name##_init(sorted_array_t* array, int capacity); \
-    type sorted_array_##name##_at(sorted_array_t* array, int index);	\
-    type* sorted_array_##name##_at_ref(sorted_array_t* array, int index); \
-    int sorted_array_##name##_close(sorted_array_t* array);		\
-    int sorted_array_##name##_insert(sorted_array_t* array, type element); \
-    int sorted_array_##name##_bsearch(sorted_array_t* array, type element); \
-    void sorted_array_##name##_print(sorted_array_t* array);		\
-    int sorted_array_##name##_from_array(sorted_array_t* dest, array_t* src);
-
-#define sorted_array_type_implementation(type, name) \
-    int sorted_array_##name##_init(sorted_array_t* array, int capacity) { \
-	return sorted_array_init(array, sizeof(type), capacity, cmp_##name); \
-    }									\
-    type sorted_array_##name##_at(sorted_array_t* array, int index) {	\
-	type res;							\
-	sorted_array_at(array, index, &res);				\
-	return res;							\
-    }									\
-    type* sorted_array_##name##_at_ref(sorted_array_t* array, int index) { \
-        return sorted_array_at_ref(array, index);			\
-    }									\
-    int sorted_array_##name##_close(sorted_array_t* array) {		\
-	return sorted_array_close(array);				\
-    }									\
-    int sorted_array_##name##_insert(sorted_array_t* array, type element) { \
-	type __n = element;						\
-	return sorted_array_insert(array, &__n);			\
-    }									\
-    int sorted_array_##name##_bsearch(sorted_array_t* array, type element) { \
-	type __n = element;						\
-	return sorted_array_bsearch(array, &__n, NULL);			\
-    }									\
-    void sorted_array_##name##_print(sorted_array_t* array) {		\
-	sorted_array_print(array, print_##name);			\
-    }									\
-    int sorted_array_##name##_from_array(sorted_array_t* dest, array_t* src) { \
-	return sorted_array_from_array(dest, src);			\
-    }
-sorted_array_type_definition(char, i8)
-sorted_array_type_definition(unsigned char, u8)
-sorted_array_type_definition(short, i16)
-sorted_array_type_definition(unsigned short, u16)
-sorted_array_type_definition(int, i32)
-sorted_array_type_definition(unsigned int, u32)
-sorted_array_type_definition(long, i64)
-sorted_array_type_definition(unsigned long, u64)
-sorted_array_type_definition(char, char)
-sorted_array_type_definition(float, f32)
-sorted_array_type_definition(double, f64)
     
 
 typedef struct list_node_s {
@@ -234,118 +80,6 @@ list_node_t* list_successor_node(list_t* list, void* element);
 int list_predecessor(list_t* list, void* element, void* out);
 list_node_t* list_predecessor_node(list_t* list, void* element);
 
-#define list_type_definition(type, name)				\
-    int list_##name##_init(list_t* list);				\
-    int list_##name##_close(list_t* list);				\
-    int list_##name##_is_empty(list_t* list);				\
-    int list_##name##_push_front(list_t* list, type data);		\
-    int list_##name##_push_back(list_t* list, type data);		\
-    type list_##name##_pop_front(list_t* list);				\
-    type list_##name##_pop_back(list_t* list);				\
-    int list_##name##_insert_index(list_t* list, int index, type data); \
-    int list_##name##_delete(list_t* list, type element);		\
-    int list_##name##_print(list_t* list);				\
-    list_node_t* list_##name##_search(list_t* list, type element);	\
-    type list_##name##_min(list_t* list);				\
-    list_node_t* list_##name##_min_node(list_t* list);			\
-    type list_##name##_max(list_t* list);				\
-    list_node_t* list_##name##_max_node(list_t* list);			\
-    type list_##name##_successor(list_t* list, type element);		\
-    list_node_t* list_##name##_successor_node(list_t* list, type element); \
-    type list_##name##_predecessor(list_t* list, type element);		\
-    list_node_t* list_##name##_predecessor_node(list_t* list, type element);
-
-#define list_type_implementation(type, name)			\
-    int list_##name##_init(list_t* list) {			\
-	return list_init(list, sizeof(type), cmp_##name);	\
-    }								\
-    int list_##name##_close(list_t* list) {			\
-	return list_close(list);				\
-    }								\
-    int list_##name##_is_empty(list_t* list) {			\
-	return list_is_empty(list);				\
-    }								\
-    int list_##name##_push_front(list_t* list, type data) {	\
-	type __n = data;					\
-	return list_push_front(list, &__n);			\
-    }								\
-    int list_##name##_push_back(list_t* list, type data) {	\
-	type __n = data;					\
-	return list_push_back(list, &__n);			\
-    }								\
-    type list_##name##_pop_front(list_t* list) {		\
-	type res;						\
-	list_pop_front(list, &res);				\
-	return res;						\
-    }								\
-    type list_##name##_pop_back(list_t* list) {			\
-	type res;						\
-	list_pop_back(list, &res);				\
-	return res;						\
-    }								\
-    int list_##name##_insert_index(list_t* list, int index, type data) { \
-	type __n = data;						\
-	return list_insert_index(list, index, &__n);				\
-    }									\
-    int list_##name##_delete(list_t* list, type element) {		\
-	type __n = element;						\
-	return list_delete(list, &__n);					\
-    }									\
-    int list_##name##_print(list_t* list) {				\
-	return list_print(list, print_##name);				\
-    }									\
-    list_node_t* list_##name##_search(list_t* list, type element) {	\
-	type __n = element;						\
-	return list_search_node(list, &__n);				\
-    }									\
-    type list_##name##_min(list_t* list) {				\
-	type res;							\
-	list_min(list, &res);						\
-	return res;							\
-    }									\
-    list_node_t* list_##name##_min_node(list_t* list) {			\
-	return list_min_node(list);					\
-    }									\
-    type list_##name##_max(list_t* list) {				\
-	type res;							\
-	list_max(list, &res);						\
-	return res;							\
-    }									\
-    list_node_t* list_##name##_max_node(list_t* list) {			\
-	return list_max_node(list);					\
-    }									\
-    type list_##name##_successor(list_t* list, type element) {		\
-	type __n = element, res;							\
-	list_successor(list, &__n, &res);				\
-	return res;							\
-    }									\
-    list_node_t* list_##name##_successor_node(list_t* list, type element){ \
-	type __n = element;						\
-	return list_successor_node(list, &__n);				\
-    }									\
-    type list_##name##_predecessor(list_t* list, type element) {	\
-	type __n = element, res;					\
-	list_predecessor(list, &__n, &res);				\
-	return res;							\
-    }									\
-    list_node_t* list_##name##_predecessor_node(list_t* list, type element) { \
-	type __n = element;						\
-	return list_predecessor_node(list, &__n);			\
-    }
-
-list_type_definition(char, i8)
-list_type_definition(unsigned char, u8)
-list_type_definition(short, i16)
-list_type_definition(unsigned short, u16)
-list_type_definition(int, i32)
-list_type_definition(unsigned int, u32)
-list_type_definition(long, i64)
-list_type_definition(unsigned long, u64)
-list_type_definition(char, char)
-list_type_definition(float, f32)
-list_type_definition(double, f64)
-							  
-
 typedef struct dlist_node_s {
     struct dlist_node_s* prev, *next;
     /* data */
@@ -380,116 +114,6 @@ dlist_node_t* dlist_successor_node(dlist_t* list, void* element);
 int dlist_predecessor(dlist_t* list, void* element, void* out);
 dlist_node_t* dlist_predecessor_node(dlist_t* list, void* element);
 
-#define dlist_type_definition(type, name)				\
-    int dlist_##name##_init(dlist_t* list);				\
-    int dlist_##name##_close(dlist_t* list);				\
-    int dlist_##name##_is_empty(dlist_t* list);				\
-    int dlist_##name##_push_front(dlist_t* list, type data);		\
-    int dlist_##name##_push_back(dlist_t* list, type data);		\
-    type dlist_##name##_pop_front(dlist_t* list);				\
-    type dlist_##name##_pop_back(dlist_t* list);				\
-    int dlist_##name##_insert_index(dlist_t* list, int index, type data); \
-    int dlist_##name##_delete(dlist_t* list, type element);		\
-    int dlist_##name##_print(dlist_t* list);				\
-    dlist_node_t* dlist_##name##_search(dlist_t* list, type element);	\
-    type dlist_##name##_min(dlist_t* list);				\
-    dlist_node_t* dlist_##name##_min_node(dlist_t* list);			\
-    type dlist_##name##_max(dlist_t* list);				\
-    dlist_node_t* dlist_##name##_max_node(dlist_t* list);			\
-    type dlist_##name##_successor(dlist_t* list, type element);		\
-    dlist_node_t* dlist_##name##_successor_node(dlist_t* list, type element); \
-    type dlist_##name##_predecessor(dlist_t* list, type element);		\
-    dlist_node_t* dlist_##name##_predecessor_node(dlist_t* list, type element);
-
-#define dlist_type_implementation(type, name)			\
-    int dlist_##name##_init(dlist_t* list) {			\
-	return dlist_init(list, sizeof(type), cmp_##name);	\
-    }								\
-    int dlist_##name##_close(dlist_t* list) {			\
-	return dlist_close(list);				\
-    }								\
-    int dlist_##name##_is_empty(dlist_t* list) {			\
-	return dlist_is_empty(list);				\
-    }								\
-    int dlist_##name##_push_front(dlist_t* list, type data) {	\
-	type __n = data;					\
-	return dlist_push_front(list, &__n);			\
-    }								\
-    int dlist_##name##_push_back(dlist_t* list, type data) {	\
-	type __n = data;					\
-	return dlist_push_back(list, &__n);			\
-    }								\
-    type dlist_##name##_pop_front(dlist_t* list) {		\
-	type res;						\
-	dlist_pop_front(list, &res);				\
-	return res;						\
-    }								\
-    type dlist_##name##_pop_back(dlist_t* list) {			\
-	type res;						\
-	dlist_pop_back(list, &res);				\
-	return res;						\
-    }								\
-    int dlist_##name##_insert_index(dlist_t* list, int index, type data) { \
-	type __n = data;						\
-	return dlist_insert_index(list, index, &__n);				\
-    }									\
-    int dlist_##name##_delete(dlist_t* list, type element) {		\
-	type __n = element;						\
-	return dlist_delete(list, &__n);					\
-    }									\
-    int dlist_##name##_print(dlist_t* list) {				\
-	return dlist_print(list, print_##name);				\
-    }									\
-    dlist_node_t* dlist_##name##_search(dlist_t* list, type element) {	\
-	type __n = element;						\
-	return dlist_search_node(list, &__n);				\
-    }									\
-    type dlist_##name##_min(dlist_t* list) {				\
-	type res;							\
-	dlist_min(list, &res);						\
-	return res;							\
-    }									\
-    dlist_node_t* dlist_##name##_min_node(dlist_t* list) {			\
-	return dlist_min_node(list);					\
-    }									\
-    type dlist_##name##_max(dlist_t* list) {				\
-	type res;							\
-	dlist_max(list, &res);						\
-	return res;							\
-    }									\
-    dlist_node_t* dlist_##name##_max_node(dlist_t* list) {			\
-	return dlist_max_node(list);					\
-    }									\
-    type dlist_##name##_successor(dlist_t* list, type element) {		\
-	type __n = element, res;							\
-	dlist_successor(list, &__n, &res);				\
-	return res;							\
-    }									\
-    dlist_node_t* dlist_##name##_successor_node(dlist_t* list, type element){ \
-	type __n = element;						\
-	return dlist_successor_node(list, &__n);				\
-    }									\
-    type dlist_##name##_predecessor(dlist_t* list, type element) {	\
-	type __n = element, res;					\
-	dlist_predecessor(list, &__n, &res);				\
-	return res;							\
-    }									\
-    dlist_node_t* dlist_##name##_predecessor_node(dlist_t* list, type element) { \
-	type __n = element;						\
-	return dlist_predecessor_node(list, &__n);			\
-    }
-
-dlist_type_definition(char, i8)
-dlist_type_definition(unsigned char, u8)
-dlist_type_definition(short, i16)
-dlist_type_definition(unsigned short, u16)
-dlist_type_definition(int, i32)
-dlist_type_definition(unsigned int, u32)
-dlist_type_definition(long, i64)
-dlist_type_definition(unsigned long, u64)
-dlist_type_definition(char, char)
-dlist_type_definition(float, f32)
-dlist_type_definition(double, f64)
 
 typedef struct lstack_s {
     list_t elements;
@@ -499,6 +123,7 @@ int lstack_init(lstack_t* stack, int type_size, int (*cmp)(void*, void*));
 int lstack_close(lstack_t* stack);
 int lstack_is_empty(lstack_t* stack);
 int lstack_peek(lstack_t* stack, void* out);
+void* lstack_peek_ref(lstack_t* stack);
 int lstack_push(lstack_t* stack, void* in);
 int lstack_pop(lstack_t* stack, void* out);
 void lstack_print(lstack_t* stack, void (*print)(void*));
@@ -511,6 +136,7 @@ int astack_init(astack_t* stack, int type_size, int capacity, int (*cmp)(void*, 
 int astack_close(astack_t* stack);
 int astack_is_empty(astack_t* stack);
 int astack_peek(astack_t* stack, void* out);
+void* astack_peek_ref(astack_t* stack);
 int astack_push(astack_t* stack, void* in);
 int astack_pop(astack_t* stack, void* out);
 void astack_print(astack_t* stack, void (*print)(void*));
@@ -523,6 +149,7 @@ int lqueue_init(lqueue_t* queue, int type_size, int (*cmp)(void*, void*));
 int lqueue_close(lqueue_t* queue);
 int lqueue_is_empty(lqueue_t* queue);
 int lqueue_peek(lqueue_t* queue, void* out);
+void* lqueue_peek_ref(lqueue_t* queue);
 int lqueue_enqueue(lqueue_t* queue, void* in);
 int lqueue_dequeue(lqueue_t* queue, void* out);
 void lqueue_print(lqueue_t* queue, void (*print)(void*));
@@ -536,6 +163,7 @@ int aqueue_init(aqueue_t* queue, int type_size, int capacity);
 int aqueue_close(aqueue_t* queue);
 int aqueue_is_empty(aqueue_t* queue);
 int aqueue_peek(aqueue_t* queue, void* out);
+void* aqueue_peek_ref(aqueue_t* queue);
 int aqueue_enqueue(aqueue_t* queue, void* in);
 int aqueue_dequeue(aqueue_t* queue, void* out);
 void aqueue_print(aqueue_t* queue, void (*print)(void*));
@@ -549,6 +177,8 @@ int ldeque_close(ldeque_t* deque);
 int ldeque_is_empty(ldeque_t* deque);
 int ldeque_peek_front(ldeque_t* deque, void* out);
 int ldeque_peek_back(ldeque_t* deque, void* out);
+void* ldeque_peek_front_ref(ldeque_t* deque);
+void* ldeque_peek_back_ref(ldeque_t* deque);
 int ldeque_push_front(ldeque_t* deque, void* in);
 int ldeque_push_back(ldeque_t* deque, void* in);
 int ldeque_pop_front(ldeque_t* deque, void* out);
@@ -565,6 +195,8 @@ int adeque_close(adeque_t* deque);
 int adeque_is_empty(adeque_t* deque);
 int adeque_peek_front(adeque_t* deque, void* out);
 int adeque_peek_back(adeque_t* deque, void* out);
+void* adeque_peek_front_ref(adeque_t* deque);
+void* adeque_peek_back_ref(adeque_t* deque);
 int adeque_push_front(adeque_t* deque, void* in);
 int adeque_push_back(adeque_t* deque, void* in);
 int adeque_pop_front(adeque_t* deque, void* out);
@@ -584,6 +216,7 @@ int oh_hashmap_insert(oh_hashmap_t* map, void* in);
 int oh_hashmap_delete(oh_hashmap_t* map, void* element);
 int oh_hashmap_search(oh_hashmap_t* map, void* key, void* out);
 void* oh_hashmap_search_ref(oh_hashmap_t*, void* key);
+
 
 typedef struct lbinary_tree_node_s {
     struct lbinary_tree_node_s *left, *right, *p;
@@ -720,6 +353,7 @@ int heap_peek_root(heap_t* heap, void* out, int type);
 void* heap_peek_root_ref(heap_t* heap, int type);
 int heap_init_from_carray(heap_t* heap, void* array, int n, int type_size, int (*cmp)(void*, void*), int type);
 int heap_init_from_array(heap_t* heap, array_t* array, int type);
+int heap_is_empty(heap_t* heap);
 
 #define max_heap_init(heap, height, ts, cmp) heap_init(heap, height, ts, cmp, max_heap_type)
 #define max_heap_close(heap) heap_close(heap)
@@ -733,27 +367,28 @@ int heap_init_from_array(heap_t* heap, array_t* array, int type);
 #define min_heap_init(heap, height, ts, cmp) heap_init(heap, height, ts, cmp, min_heap_type)
 #define min_heap_close(heap) heap_close(heap)
 #define min_heap_insert(heap, data) heap_insert(heap, data, min_heap_type)
-#define min_heap_pop_max(heap, out) heap_pop_root(heap, out, min_heap_type)
-#define min_heap_max(heap, out) heap_peek_root(heap, out, min_heap_type)
-#define min_heap_max_ref(heap) heap_peek_root_ref(heap, min_heap_type)
+#define min_heap_pop_min(heap, out) heap_pop_root(heap, out, min_heap_type)
+#define min_heap_min(heap, out) heap_peek_root(heap, out, min_heap_type)
+#define min_heap_min_ref(heap) heap_peek_root_ref(heap, min_heap_type)
 #define min_heap_init_from_carray(heap, arr, n, ts, cmp) heap_init_from_carray(heap, arr, n, ts, cmp, min_heap_type)
 #define min_heap_init_from_array(heap, arr) heap_init_from_array(heap, arr, min_heap_type)
 
 int array_heap_sort(array_t* array);
 
-#define graph_oriented (1 << 0)
+#define graph_directed (1 << 0)
 #define graph_connected (1 << 1)
 #define graph_completely_connected (1 << 2)
 
 #define graph_vertex_visited (1 << 0)
 
-typedef struct graph_vertex_s {
-    unsigned int tag;
+typedef struct mgraph_vertex_s {
+    int tag;
     unsigned int flags;
-    unsigned int dist;
+    float dist;
+    long int pred, id;
     /* vertex data */
     
-} graph_vertex_t;
+} mgraph_vertex_t;
 
 typedef struct mgraph_s {
     void* adjacency_matrix;
@@ -765,10 +400,10 @@ typedef struct mgraph_s {
 
 typedef long int mgraph_node_t;
 #define mgraph_node_invalid -1
-#define mgraph_vertex_tag(gptr, i) (((graph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->tag)
-#define mgraph_vertex_flags(gptr, i) (((graph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->flags)
-#define mgraph_vertex_dist(gptr, i) (((graph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->dist)
-#define mgraph_vertex_data(gptr, i) (((char*)array_at_ref(&(gptr)->vertices, i)) + sizeof(graph_vertex_t))
+#define mgraph_vertex_tag(gptr, i) (((mgraph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->tag)
+#define mgraph_vertex_flags(gptr, i) (((mgraph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->flags)
+#define mgraph_vertex_dist(gptr, i) (((mgraph_vertex_t*)array_at_ref(&(gptr)->vertices, i))->dist)
+#define mgraph_vertex_data(gptr, i) (((char*)array_at_ref(&(gptr)->vertices, i)) + sizeof(mgraph_vertex_t))
 
 int mgraph_init(mgraph_t* g, int vertex_size, int flags, int (*cmp)(void*, void*));
 int mgraph_close(mgraph_t* g);
@@ -779,9 +414,49 @@ int mgraph_add_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r);
 int mgraph_remove_vertex(mgraph_t* g, mgraph_node_t v);
 int mgraph_remove_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r);
 int mgraph_connected(mgraph_t* g, mgraph_node_t l, mgraph_node_t r);
-int mgraph_breadth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_node_t, void*), void* data);
-int mgraph_depth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_node_t, void*), void* data);
+int mgraph_breadth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_t*, mgraph_node_t, void*), void* data);
+int mgraph_depth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_t*, mgraph_node_t, void*), void* data);
 void mgraph_print_adjacency_matrix(mgraph_t* g, void (*print)(void*));
+int mgraph_connected_components(mgraph_t* g);
+int mgraph_topological_ordering(mgraph_t* g, list_t* out);
+int mgraph_dijkstra(mgraph_t* g, mgraph_node_t node, float (*weight)(mgraph_node_t, mgraph_node_t));
+int mgraph_floyd(mgraph_t* g, mgraph_node_t s, int* out_T, int* out_C);
 
+typedef struct lgraph_vertex_s {
+    int tag;
+    unsigned int flags;
+    float dist;
+    long int pred, id;
+    list_t adjacency_list;
+    /* data */
+} lgraph_vertex_t;
+
+typedef struct lgraph_s {
+    array_t vertices;
+    size_t vertex_data_size;
+    int flags;
+    int (*cmp)(void*, void*);
+} lgraph_t;
+
+typedef long int lgraph_node_t;
+
+int lgraph_init(lgraph_t* g, int vertex_size, int flags, int (*cmp)(void*, void*));
+int lgraph_close(lgraph_t* g);
+lgraph_node_t lgraph_add_vertex(lgraph_t* g, void* vertex);
+lgraph_node_t lgraph_add_vertices_carray(lgraph_t* g, void* vertices, int n);
+lgraph_node_t lgraph_add_vertices_array(lgraph_t* g, array_t* vertices);
+int lgraph_add_edge(lgraph_t* g, lgraph_node_t l, lgraph_node_t r);
+int lgraph_remove_vertex(lgraph_t* g, lgraph_node_t v);
+int lgraph_remove_edge(lgraph_t* g, lgraph_node_t l, lgraph_node_t r);
+int lgraph_connected(lgraph_t* g, lgraph_node_t l, lgraph_node_t r);
+int lgraph_breadth_first_search(lgraph_t* g, lgraph_node_t node, void (*func)(lgraph_t*, lgraph_node_t, void*), void* data);
+int lgraph_depth_first_search(lgraph_t* g, lgraph_node_t node, void (*func)(lgraph_t*, lgraph_node_t, void*), void* data);
+int lgraph_connected_components(lgraph_t* g);
+int lgraph_topological_ordering(lgraph_t* g, list_t* out);
+int lgraph_dijkstra(lgraph_t* g, lgraph_node_t node, float (*weight)(lgraph_node_t, lgraph_node_t));
+int lgraph_floyd(lgraph_t* g, lgraph_node_t s, int* out_T, int* out_C);
+void lgraph_adjacency_lists_print(lgraph_t* g, void (*print)(void*));
+
+#include "macros.h"
 
 #endif /* CLIB_H */

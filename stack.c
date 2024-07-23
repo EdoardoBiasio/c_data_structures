@@ -31,6 +31,15 @@ int lstack_peek(lstack_t* stack, void* out) {
     return -1;
 }
 
+void* lstack_peek_ref(lstack_t* stack) {
+    if (!stack)
+	return NULL;
+    if (!lstack_is_empty(stack)) {
+	return list_node_data(stack->elements.head);
+    }
+    return NULL;
+}
+
 int lstack_push(lstack_t* stack, void* in) {
     if (!stack || !in)
 	return -1;
@@ -74,6 +83,12 @@ int astack_peek(astack_t* stack, void* out) {
     return array_at(&stack->elements, stack->elements.len - 1, out);
 }
 
+void* astack_peek_ref(astack_t* stack) {
+    if (!stack)
+	return NULL;
+    return array_at_ref(&stack->elements, stack->elements.len - 1);
+}
+
 int astack_push(astack_t* stack, void* in) {
     if (!stack || !in)
 	return -1;
@@ -94,3 +109,28 @@ void astack_print(astack_t* stack, void (*print)(void*)) {
     array_print(&stack->elements, print);
     
 }
+
+lstack_type_implementation(char, i8)
+lstack_type_implementation(unsigned char, u8)
+lstack_type_implementation(short, i16)
+lstack_type_implementation(unsigned short, u16)
+lstack_type_implementation(int, i32)
+lstack_type_implementation(unsigned int, u32)
+lstack_type_implementation(long, i64)
+lstack_type_implementation(unsigned long, u64)
+lstack_type_implementation(char, char)
+lstack_type_implementation(float, f32)
+lstack_type_implementation(double, f64)
+
+astack_type_implementation(char, i8)
+astack_type_implementation(unsigned char, u8)
+astack_type_implementation(short, i16)
+astack_type_implementation(unsigned short, u16)
+astack_type_implementation(int, i32)
+astack_type_implementation(unsigned int, u32)
+astack_type_implementation(long, i64)
+astack_type_implementation(unsigned long, u64)
+astack_type_implementation(char, char)
+astack_type_implementation(float, f32)
+astack_type_implementation(double, f64)
+    

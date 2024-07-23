@@ -34,6 +34,18 @@ int ldeque_peek_back(ldeque_t* deque, void* out) {
     return 0;
 }
 
+void* ldeque_peek_front_ref(ldeque_t* deque) {
+    if (!deque)
+	return NULL;
+    return dlist_node_data(deque->elements.head);
+}
+
+void* ldeque_peek_back_ref(ldeque_t* deque) {
+    if (!deque)
+	return NULL;
+    return dlist_node_data(deque->elements.tail);
+}
+
 int ldeque_push_front(ldeque_t* deque, void* in) {
     if (!deque || !in)
 	return -1;
@@ -104,6 +116,17 @@ int adeque_peek_back(adeque_t* deque, void* out) {
 
     memcpy(out, (char*) deque->data + deque->tail * deque->type_size, deque->type_size);
     return 0;
+}
+void* adeque_peek_front_ref(adeque_t* deque) {
+    if (!deque)
+	return NULL;
+    return (char*) deque->data + deque->head * deque->type_size;
+}
+
+void* adeque_peek_back_ref(adeque_t* deque) {
+    if (!deque)
+	return NULL;
+    return (char*) deque->data + deque->tail * deque->type_size;
 }
 
 void adeque_realloc(adeque_t* deque) {
@@ -190,4 +213,27 @@ void adeque_print(adeque_t* deque, void (*print)(void*)) {
 	print((char*) deque->data + idx * deque->type_size);
     }
 }
+ldeque_type_implementation(char, i8)
+ldeque_type_implementation(unsigned char, u8)
+ldeque_type_implementation(short, i16)
+ldeque_type_implementation(unsigned short, u16)
+ldeque_type_implementation(int, i32)
+ldeque_type_implementation(unsigned int, u32)
+ldeque_type_implementation(long, i64)
+ldeque_type_implementation(unsigned long, u64)
+ldeque_type_implementation(char, char)
+ldeque_type_implementation(float, f32)
+ldeque_type_implementation(double, f64)
+
+adeque_type_implementation(char, i8)
+adeque_type_implementation(unsigned char, u8)
+adeque_type_implementation(short, i16)
+adeque_type_implementation(unsigned short, u16)
+adeque_type_implementation(int, i32)
+adeque_type_implementation(unsigned int, u32)
+adeque_type_implementation(long, i64)
+adeque_type_implementation(unsigned long, u64)
+adeque_type_implementation(char, char)
+adeque_type_implementation(float, f32)
+adeque_type_implementation(double, f64)
 
