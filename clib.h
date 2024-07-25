@@ -251,6 +251,7 @@ typedef struct abinary_tree_s {
 #define abinary_tree_node_left(node) (2 * (node) + 1)
 #define abinary_tree_node_right(node) (2 * (node) + 2)
 #define abinary_tree_node_parent(node) (((node) - 1) / 2)
+#define abinary_tree_node_data(tree, i) ((char*) (tree)->data + (i) * (tree)->type_size)
 
 int abinary_tree_init(abinary_tree_t* tree, int type_size, int capacity, int (*cmp)(void*, void*));
 int abinary_tree_close(abinary_tree_t* tree);

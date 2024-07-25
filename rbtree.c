@@ -479,3 +479,14 @@ void* rb_tree_search_ref(rb_tree_t* tree, rb_tree_node_t* node, void* element) {
     return rb_tree_node_data(t);
 
 }
+rb_tree_type_implementation(char, i8)
+rb_tree_type_implementation(unsigned char, u8)
+rb_tree_type_implementation(short, i16)
+rb_tree_type_implementation(unsigned short, u16)
+rb_tree_type_implementation(int, i32)
+rb_tree_type_implementation(unsigned int, u32)
+rb_tree_type_implementation(long, i64)
+rb_tree_type_implementation(unsigned long, u64)
+rb_tree_type_implementation(char, char)
+rb_tree_type_implementation(float, f32)
+rb_tree_type_implementation(double, f64)

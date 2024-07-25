@@ -782,6 +782,357 @@ oh_hashmap_type_definition(char, char)
 oh_hashmap_type_definition(float, f32)
 oh_hashmap_type_definition(double, f64)
 
+#define lbinary_tree_type_definition(type, name)			\
+    type *lbinary_tree_##name##_node_data(lbinary_tree_node_t* node);	\
+    int lbinary_tree_##name##_init(lbinary_tree_t* tree);		\
+    int lbinary_tree_##name##_close(lbinary_tree_t* tree);		\
+    void lbinary_tree_##name##_visit_in_order(lbinary_tree_node_t* node, void (*func)(lbinary_tree_node_t*, void*), void* data); \
+    void lbinary_tree_##name##_visit_pre_order(lbinary_tree_node_t* node, void (*func)(lbinary_tree_node_t*, void*), void* data); \
+    void lbinary_tree_##name##_visit_post_order(lbinary_tree_node_t* node, void (*func)(lbinary_tree_node_t*, void*), void* data); \
+    void lbinary_tree_##name##_print_in_order(lbinary_tree_node_t* node);	\
+    void lbinary_tree_##name##_print_pre_order(lbinary_tree_node_t* node);	\
+    void lbinary_tree_##name##_print_post_order(lbinary_tree_node_t* node);
+#define lbinary_tree_type_implementation(type, name)			\
+    type *lbinary_tree_##name##_node_data(lbinary_tree_node_t* node) {	\
+	return (type*)lbinary_tree_node_data(node);			\
+    }									\
+    int lbinary_tree_##name##_init(lbinary_tree_t* tree) {		\
+	return lbinary_tree_init(tree, sizeof(type), cmp_##name);	\
+    }									\
+    int lbinary_tree_##name##_close(lbinary_tree_t* tree) {		\
+	return lbinary_tree_close(tree);				\
+    }									\
+    void lbinary_tree_##name##_visit_in_order(lbinary_tree_node_t* node, void (*func)(lbinary_tree_node_t*, void*), void* data) { \
+	lbinary_tree_visit_in_order(node, func, data);			\
+    }									\
+    void lbinary_tree_##name##_visit_pre_order(lbinary_tree_node_t* node, void (*func)(lbinary_tree_node_t*, void*), void* data) { \
+	lbinary_tree_visit_pre_order(node, func, data);			\
+    }									\
+    void lbinary_tree_##name##_visit_post_order(lbinary_tree_node_t* node, void (*func)(lbinary_tree_node_t*, void*), void* data) { \
+	lbinary_tree_visit_post_order(node, func, data);		\
+    }									\
+    void lbinary_tree_##name##_print_in_order(lbinary_tree_node_t* node) { \
+	lbinary_tree_print_in_order(node, print_##name);		\
+    }									\
+    void lbinary_tree_##name##_print_pre_order(lbinary_tree_node_t* node) { \
+	lbinary_tree_print_pre_order(node, print_##name);		\
+    }									\
+    void lbinary_tree_##name##_print_post_order(lbinary_tree_node_t* node) { \
+	lbinary_tree_print_post_order(node, print_##name);		\
+    }									
+lbinary_tree_type_definition(char, i8)
+lbinary_tree_type_definition(unsigned char, u8)
+lbinary_tree_type_definition(short, i16)
+lbinary_tree_type_definition(unsigned short, u16)
+lbinary_tree_type_definition(int, i32)
+lbinary_tree_type_definition(unsigned int, u32)
+lbinary_tree_type_definition(long, i64)
+lbinary_tree_type_definition(unsigned long, u64)
+lbinary_tree_type_definition(char, char)
+lbinary_tree_type_definition(float, f32)
+lbinary_tree_type_definition(double, f64)
 
+
+#define abinary_tree_type_definition(type, name)			\
+    type* abinary_tree_##name##_node_data(abinary_tree_t* tree, int i);	\
+    int abinary_tree_##name##_init(abinary_tree_t* tree, int capacity);	\
+    int abinary_tree_##name##_close(abinary_tree_t* tree);		\
+    void abinary_tree_##name##_visit_in_order(abinary_tree_t* tree, int i, void (*func)(abinary_tree_t*, int, void*), void* data); \
+    void abinary_tree_##name##_visit_pre_order(abinary_tree_t* tree, int i, void (*func)(abinary_tree_t*, int, void*), void* data); \
+    void abinary_tree_##name##_visit_post_order(abinary_tree_t* tree, int i, void (*func)(abinary_tree_t*, int, void*), void* data); \
+    void abinary_tree_##name##_print_in_order(abinary_tree_t* tree);		\
+    void abinary_tree_##name##_print_pre_order(abinary_tree_t* tree);		\
+    void abinary_tree_##name##_print_post_order(abinary_tree_t* tree); 
+
+#define abinary_tree_type_implementation(type, name)			\
+    type* abinary_tree_##name##_node_data(abinary_tree_t* tree, int i) { \
+	return (type*) abinary_tree_node_data(tree, i);			\
+    }									\
+    int abinary_tree_##name##_init(abinary_tree_t* tree, int capacity) { \
+	return abinary_tree_init(tree, sizeof(type), capacity, cmp_##name); \
+    }									\
+    int abinary_tree_##name##_close(abinary_tree_t* tree) {		\
+	return abinary_tree_close(tree);				\
+    }									\
+    void abinary_tree_##name##_visit_in_order(abinary_tree_t* tree, int i, void (*func)(abinary_tree_t*, int, void*), void* data) { \
+	abinary_tree_visit_in_order(tree, i, func, data);		\
+    }									\
+    void abinary_tree_##name##_visit_pre_order(abinary_tree_t* tree, int i, void (*func)(abinary_tree_t*, int, void*), void* data) { \
+	abinary_tree_visit_pre_order(tree, i, func, data);		\
+    }									\
+    void abinary_tree_##name##_visit_post_order(abinary_tree_t* tree, int i, void (*func)(abinary_tree_t*, int, void*), void* data) { \
+	abinary_tree_visit_post_order(tree, i, func, data);		\
+    }									\
+    void abinary_tree_##name##_print_in_order(abinary_tree_t* tree) {	\
+	abinary_tree_print_in_order(tree, print_##name);		\
+    }									\
+    void abinary_tree_##name##_print_pre_order(abinary_tree_t* tree) {	\
+	abinary_tree_print_pre_order(tree, print_##name);		\
+    }									\
+    void abinary_tree_##name##_print_post_order(abinary_tree_t* tree) { \
+	abinary_tree_print_post_order(tree, print_##name);		\
+    }
+abinary_tree_type_definition(char, i8)
+abinary_tree_type_definition(unsigned char, u8)
+abinary_tree_type_definition(short, i16)
+abinary_tree_type_definition(unsigned short, u16)
+abinary_tree_type_definition(int, i32)
+abinary_tree_type_definition(unsigned int, u32)
+abinary_tree_type_definition(long, i64)
+abinary_tree_type_definition(unsigned long, u64)
+abinary_tree_type_definition(char, char)
+abinary_tree_type_definition(float, f32)
+abinary_tree_type_definition(double, f64)
+
+#define binary_search_tree_type_definition(type, name)			\
+    int binary_search_tree_##name##_init(binary_search_tree_t* bst);	\
+    int binary_search_tree_##name##_close(binary_search_tree_t* bst);	\
+    void binary_search_tree_##name##_visit_in_order(binary_search_tree_node_t* node, void (*func)(binary_search_tree_node_t*, void*), void* data); \
+    void binary_search_tree_##name##_visit_pre_order(binary_search_tree_node_t* node, void (*func)(binary_search_tree_node_t*, void*), void* data); \
+    void binary_search_tree_##name##_visit_post_order(binary_search_tree_node_t* node, void (*func)(binary_search_tree_node_t*, void*), void* data); \
+    void binary_search_tree_##name##_print_in_order(binary_search_tree_node_t* node); \
+    void binary_search_tree_##name##_print_pre_order(binary_search_tree_node_t* node); \
+    void binary_search_tree_##name##_print_post_order(binary_search_tree_node_t* node); \
+    int binary_search_tree_##name##_insert(binary_search_tree_t* bst, type element); \
+    int binary_search_tree_##name##_delete(binary_search_tree_t* bst, type element); \
+    type* binary_search_tree_##name##_search_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node, type key); \
+    binary_search_tree_node_t* binary_search_tree_##name##_search_node(binary_search_tree_t* bst, binary_search_tree_node_t* node, type key); \
+    type binary_search_tree_##name##_min(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    type binary_search_tree_##name##_max(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    type binary_search_tree_##name##_successor(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    type binary_search_tree_##name##_predecessor(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    type* binary_search_tree_##name##_min_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    type* binary_search_tree_##name##_max_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    type* binary_search_tree_##name##_successor_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    type* binary_search_tree_##name##_predecessor_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    binary_search_tree_node_t* binary_search_tree_##name##_min_node(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    binary_search_tree_node_t* binary_search_tree_##name##_max_node(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    binary_search_tree_node_t* binary_search_tree_##name##_successor_node(binary_search_tree_t* bst, binary_search_tree_node_t* node); \
+    binary_search_tree_node_t* binary_search_tree_##name##_predecessor_node(binary_search_tree_t* bst, binary_search_tree_node_t* node);
+
+#define binary_search_tree_type_implementation(type, name)		\
+    int binary_search_tree_##name##_init(binary_search_tree_t* bst) {	\
+	return binary_search_tree_init(bst, sizeof(type), cmp_##name);	\
+    }									\
+    int binary_search_tree_##name##_close(binary_search_tree_t* bst) {	\
+	return binary_search_tree_close(bst);				\
+    }									\
+    void binary_search_tree_##name##_visit_in_order(binary_search_tree_node_t* node, void (*func)(binary_search_tree_node_t*, void*), void* data) { \
+	binary_search_tree_visit_in_order(node, func, data);		\
+    }									\
+    void binary_search_tree_##name##_visit_pre_order(binary_search_tree_node_t* node, void (*func)(binary_search_tree_node_t*, void*), void* data) { \
+	binary_search_tree_visit_pre_order(node, func, data);		\
+    }									\
+    void binary_search_tree_##name##_visit_post_order(binary_search_tree_node_t* node, void (*func)(binary_search_tree_node_t*, void*), void* data) { \
+	binary_search_tree_visit_post_order(node, func, data);		\
+    }									\
+    void binary_search_tree_##name##_print_in_order(binary_search_tree_node_t* node) { \
+	binary_search_tree_print_in_order(node, print_##name);		\
+    }									\
+    void binary_search_tree_##name##_print_pre_order(binary_search_tree_node_t* node) { \
+	binary_search_tree_print_pre_order(node, print_##name);		\
+    }									\
+    void binary_search_tree_##name##_print_post_order(binary_search_tree_node_t* node) { \
+	binary_search_tree_print_post_order(node, print_##name);	\
+    }									\
+    int binary_search_tree_##name##_insert(binary_search_tree_t* bst, type element) { \
+	type __n = element;						\
+	return binary_search_tree_insert(bst, &__n);			\
+    }									\
+    int binary_search_tree_##name##_delete(binary_search_tree_t* bst, type element) { \
+	type __n = element;						\
+	return binary_search_tree_delete(bst, &__n);			\
+    }									\
+    type* binary_search_tree_##name##_search_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node, type key) { \
+	type __n = key;							\
+	return binary_search_tree_search_ref(bst, node, &__n);		\
+    }									\
+    binary_search_tree_node_t* binary_search_tree_##name##_search_node(binary_search_tree_t* bst, binary_search_tree_node_t* node, type key) { \
+	type __n = key;							\
+	return binary_search_tree_search_node(bst, node, &__n);		\
+    }									\
+    type binary_search_tree_##name##_min(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	type __n = 0;							\
+	binary_search_tree_min(bst, node, &__n);			\
+	return __n;							\
+    }									\
+    type binary_search_tree_##name##_max(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	type __n = 0;							\
+	binary_search_tree_max(bst, node, &__n);			\
+	return __n;							\
+    }									\
+    type binary_search_tree_##name##_successor(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	type __n = 0;							\
+	binary_search_tree_successor(bst, node, &__n);			\
+	return __n;							\
+    }									\
+    type binary_search_tree_##name##_predecessor(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	type __n = 0;							\
+	binary_search_tree_predecessor(bst, node, &__n);		\
+	return __n;							\
+    }									\
+    type* binary_search_tree_##name##_min_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_min_ref(bst, node);			\
+    }									\
+    type* binary_search_tree_##name##_max_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_max_ref(bst, node);			\
+    }									\
+    type* binary_search_tree_##name##_successor_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_successor_ref(bst, node);		\
+    }									\
+    type* binary_search_tree_##name##_predecessor_ref(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_predecessor_ref(bst, node);		\
+    }									\
+    binary_search_tree_node_t* binary_search_tree_##name##_min_node(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_min_node(bst, node);			\
+    }									\
+    binary_search_tree_node_t* binary_search_tree_##name##_max_node(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_max_node(bst, node);			\
+    }									\
+    binary_search_tree_node_t* binary_search_tree_##name##_successor_node(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_successor_node(bst, node);		\
+    }									\
+    binary_search_tree_node_t* binary_search_tree_##name##_predecessor_node(binary_search_tree_t* bst, binary_search_tree_node_t* node) { \
+	return binary_search_tree_predecessor_node(bst, node);		\
+    }
+
+binary_search_tree_type_definition(char, i8)
+binary_search_tree_type_definition(unsigned char, u8)
+binary_search_tree_type_definition(short, i16)
+binary_search_tree_type_definition(unsigned short, u16)
+binary_search_tree_type_definition(int, i32)
+binary_search_tree_type_definition(unsigned int, u32)
+binary_search_tree_type_definition(long, i64)
+binary_search_tree_type_definition(unsigned long, u64)
+binary_search_tree_type_definition(char, char)
+binary_search_tree_type_definition(float, f32)
+binary_search_tree_type_definition(double, f64)
+
+#define rb_tree_type_definition(type, name)				\
+    type* rb_tree_##name##_node_data(rb_tree_node_t* node);		\
+    int rb_tree_##name##_init(rb_tree_t* tree);				\
+    int rb_tree_##name##_close(rb_tree_t* tree);			\
+    int rb_tree_##name##_visit_in_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data); \
+    int rb_tree_##name##_visit_pre_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data); \
+    int rb_tree_##name##_visit_post_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data); \
+    void rb_tree_##name##_print_in_order(rb_tree_node_t* node);		\
+    void rb_tree_##name##_print_pre_order(rb_tree_node_t* node);	\
+    void rb_tree_##name##_print_post_order(rb_tree_node_t* node);	\
+    int rb_tree_##name##_insert(rb_tree_t* tree, type element);		\
+    int rb_tree_##name##_delete(rb_tree_t* tree, type element);		\
+    type* rb_tree_##name##_search_ref(rb_tree_t* tree, rb_tree_node_t* node, type element); \
+    rb_tree_node_t* rb_tree_##name##_search_node(rb_tree_t* tree, rb_tree_node_t* node, type element); \
+    rb_tree_node_t* rb_tree_##name##_min_node(rb_tree_t* tree, rb_tree_node_t* node); \
+    rb_tree_node_t* rb_tree_##name##_max_node(rb_tree_t* tree, rb_tree_node_t* node); \
+    rb_tree_node_t* rb_tree_##name##_successor_node(rb_tree_t* tree, rb_tree_node_t* node); \
+    rb_tree_node_t* rb_tree_##name##_predecessor_node(rb_tree_t* tree, rb_tree_node_t* node); \
+    type* rb_tree_##name##_min_ref(rb_tree_t* tree, rb_tree_node_t* node); \
+    type* rb_tree_##name##_max_ref(rb_tree_t* tree, rb_tree_node_t* node); \
+    type* rb_tree_##name##_successor_ref(rb_tree_t* tree, rb_tree_node_t* node); \
+    type* rb_tree_##name##_predecessor_ref(rb_tree_t* tree, rb_tree_node_t* node); \
+    type rb_tree_##name##_min(rb_tree_t* tree, rb_tree_node_t* node);	\
+    type rb_tree_##name##_max(rb_tree_t* tree, rb_tree_node_t* node);	\
+    type rb_tree_##name##_successor(rb_tree_t* tree, rb_tree_node_t* node); \
+    type rb_tree_##name##_predecessor(rb_tree_t* tree, rb_tree_node_t* node);
+
+#define rb_tree_type_implementation(type, name)				\
+    type* rb_tree_##name##_node_data(rb_tree_node_t* node) {		\
+	return (type*) rb_tree_node_data(node);				\
+    }									\
+    int rb_tree_##name##_init(rb_tree_t* tree) {			\
+	return rb_tree_init(tree, sizeof(type), cmp_##name);		\
+    }									\
+    int rb_tree_##name##_close(rb_tree_t* tree) {			\
+	return rb_tree_close(tree);					\
+    }									\
+    int rb_tree_##name##_visit_in_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data) { \
+	return rb_tree_visit_in_order(node, func, data);		\
+    }									\
+    int rb_tree_##name##_visit_pre_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data) { \
+	return rb_tree_visit_pre_order(node, func, data);		\
+    }									\
+    int rb_tree_##name##_visit_post_order(rb_tree_node_t* node, void (*func)(rb_tree_node_t* node, void*), void* data) { \
+	return rb_tree_visit_post_order(node, func, data);		\
+    }									\
+    void rb_tree_##name##_print_in_order(rb_tree_node_t* node) {	\
+	rb_tree_print_in_order(node, print_##name);			\
+    }									\
+    void rb_tree_##name##_print_pre_order(rb_tree_node_t* node) {	\
+	rb_tree_print_pre_order(node, print_##name);			\
+    }									\
+    void rb_tree_##name##_print_post_order(rb_tree_node_t* node) {	\
+	rb_tree_print_post_order(node, print_##name);			\
+    }									\
+    int rb_tree_##name##_insert(rb_tree_t* tree, type element) {	\
+	type __n = element;						\
+	return rb_tree_insert(tree, &__n);				\
+    }									\
+    int rb_tree_##name##_delete(rb_tree_t* tree, type element) {	\
+	type __n = element;						\
+	return rb_tree_delete(tree, &__n);				\
+    }									\
+    type* rb_tree_##name##_search_ref(rb_tree_t* tree, rb_tree_node_t* node, type element) { \
+	type __n = element;						\
+	return rb_tree_search_ref(tree, node, &__n);			\
+    }									\
+    rb_tree_node_t* rb_tree_##name##_search_node(rb_tree_t* tree, rb_tree_node_t* node, type element) { \
+	type __n = element;						\
+	return rb_tree_search_node(tree, node, &__n);			\
+    }									\
+    rb_tree_node_t* rb_tree_##name##_min_node(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_min_node(tree, node);				\
+    }									\
+    rb_tree_node_t* rb_tree_##name##_max_node(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_max_node(tree, node);				\
+    }									\
+    rb_tree_node_t* rb_tree_##name##_successor_node(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_successor_node(tree, node);				\
+    }									\
+    rb_tree_node_t* rb_tree_##name##_predecessor_node(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_predecessor_node(tree, node);			\
+    }									\
+    type* rb_tree_##name##_min_ref(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_min_ref(tree, node);				\
+    }									\
+    type* rb_tree_##name##_max_ref(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_max_ref(tree, node);				\
+    }									\
+    type* rb_tree_##name##_successor_ref(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_successor_ref(tree, node);				\
+    }									\
+    type* rb_tree_##name##_predecessor_ref(rb_tree_t* tree, rb_tree_node_t* node) { \
+	return rb_tree_predecessor_ref(tree, node);				\
+    }									\
+    type rb_tree_##name##_min(rb_tree_t* tree, rb_tree_node_t* node) {	\
+	type __n = 0;							\
+	rb_tree_min(tree, node, &__n);					\
+	return __n;							\
+    }									\
+    type rb_tree_##name##_max(rb_tree_t* tree, rb_tree_node_t* node) {	\
+	type __n = 0;							\
+	rb_tree_max(tree, node, &__n);					\
+	return __n;							\
+    }									\
+    type rb_tree_##name##_successor(rb_tree_t* tree, rb_tree_node_t* node) { \
+	type __n = 0;							\
+	rb_tree_successor(tree, node, &__n);				\
+	return __n;							\
+    }									\
+    type rb_tree_##name##_predecessor(rb_tree_t* tree, rb_tree_node_t* node) { \
+	type __n = 0;							\
+	rb_tree_predecessor(tree, node, &__n);				\
+	return __n;							\
+    }									
+rb_tree_type_definition(char, i8)
+rb_tree_type_definition(unsigned char, u8)
+rb_tree_type_definition(short, i16)
+rb_tree_type_definition(unsigned short, u16)
+rb_tree_type_definition(int, i32)
+rb_tree_type_definition(unsigned int, u32)
+rb_tree_type_definition(long, i64)
+rb_tree_type_definition(unsigned long, u64)
+rb_tree_type_definition(char, char)
+rb_tree_type_definition(float, f32)
+rb_tree_type_definition(double, f64)
 
 #endif

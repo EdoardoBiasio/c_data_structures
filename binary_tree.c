@@ -114,6 +114,30 @@ void abinary_tree_print_func(abinary_tree_t* tree, int i, void* data) {
     void (*print)(void*) = data;
     if (!tree || i >= tree->size)
 	return;
-    print(tree->data + i);
+    print((char*) tree->data + i * tree->type_size);
 }
+
+lbinary_tree_type_implementation(char, i8)
+lbinary_tree_type_implementation(unsigned char, u8)
+lbinary_tree_type_implementation(short, i16)
+lbinary_tree_type_implementation(unsigned short, u16)
+lbinary_tree_type_implementation(int, i32)
+lbinary_tree_type_implementation(unsigned int, u32)
+lbinary_tree_type_implementation(long, i64)
+lbinary_tree_type_implementation(unsigned long, u64)
+lbinary_tree_type_implementation(char, char)
+lbinary_tree_type_implementation(float, f32)
+lbinary_tree_type_implementation(double, f64)
+
+abinary_tree_type_implementation(char, i8)
+abinary_tree_type_implementation(unsigned char, u8)
+abinary_tree_type_implementation(short, i16)
+abinary_tree_type_implementation(unsigned short, u16)
+abinary_tree_type_implementation(int, i32)
+abinary_tree_type_implementation(unsigned int, u32)
+abinary_tree_type_implementation(long, i64)
+abinary_tree_type_implementation(unsigned long, u64)
+abinary_tree_type_implementation(char, char)
+abinary_tree_type_implementation(float, f32)
+abinary_tree_type_implementation(double, f64)
 

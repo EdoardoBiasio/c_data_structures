@@ -230,4 +230,14 @@ binary_search_tree_node_t* binary_search_tree_predecessor_node(binary_search_tre
     }
     return p;
 }
-
+binary_search_tree_type_implementation(char, i8)
+binary_search_tree_type_implementation(unsigned char, u8)
+binary_search_tree_type_implementation(short, i16)
+binary_search_tree_type_implementation(unsigned short, u16)
+binary_search_tree_type_implementation(int, i32)
+binary_search_tree_type_implementation(unsigned int, u32)
+binary_search_tree_type_implementation(long, i64)
+binary_search_tree_type_implementation(unsigned long, u64)
+binary_search_tree_type_implementation(char, char)
+binary_search_tree_type_implementation(float, f32)
+binary_search_tree_type_implementation(double, f64)
