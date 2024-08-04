@@ -1135,4 +1135,277 @@ rb_tree_type_definition(char, char)
 rb_tree_type_definition(float, f32)
 rb_tree_type_definition(double, f64)
 
+#define heap_type_definition(type, name)				\
+    type* max_heap_##name##_data(heap_t* heap, int i);			\
+    int max_heap_##name##_init(heap_t* heap, size_t height);		\
+    int max_heap_##name##_close(heap_t* heap);				\
+    int max_heap_##name##_insert(heap_t* heap, type data);		\
+    type max_heap_##name##_pop_max(heap_t* heap);			\
+    type max_heap_##name##_max(heap_t* heap);			\
+    type* max_heap_##name##_max_ref(heap_t* heap);		\
+    int max_heap_##name##_init_from_carray(heap_t* heap, type* array, int n); \
+    int max_heap_##name##_init_from_array(heap_t* heap, array_t* array); \
+    int max_heap_##name##_is_empty(heap_t* heap);			\
+    type* min_heap_##name##_data(heap_t* heap, int i);			\
+    int min_heap_##name##_init(heap_t* heap, size_t height);		\
+    int min_heap_##name##_close(heap_t* heap);				\
+    int min_heap_##name##_insert(heap_t* heap, type data);			\
+    type min_heap_##name##_pop_min(heap_t* heap);				\
+    type min_heap_##name##_min(heap_t* heap);				\
+    type* min_heap_##name##_min_ref(heap_t* heap);			\
+    int min_heap_##name##_init_from_carray(heap_t* heap, type* array, int n); \
+    int min_heap_##name##_init_from_array(heap_t* heap, array_t* array);	\
+    int min_heap_##name##_is_empty(heap_t* heap);
+
+#define heap_type_implementation(type, name)	\
+    type* max_heap_##name##_data(heap_t* heap, int i) {			\
+	return (type*)heap_data(heap, i);				\
+    }									\
+    int max_heap_##name##_init(heap_t* heap, size_t height) {		\
+	return max_heap_init(heap, height, sizeof(type), cmp_##name);	\
+    }									\
+    int max_heap_##name##_close(heap_t* heap) {				\
+	return max_heap_close(heap);					\
+    }									\
+    int max_heap_##name##_insert(heap_t* heap, type data) {		\
+        type __n = data;						\
+	return max_heap_insert(heap, &__n);				\
+    }									\
+    type max_heap_##name##_pop_max(heap_t* heap) {			\
+	type __n = 0;							\
+	max_heap_pop_max(heap, &__n);					\
+	return __n;							\
+    }									\
+    type max_heap_##name##_max(heap_t* heap) {				\
+    type __n = 0;							\
+    max_heap_max(heap, &__n);						\
+    return __n;								\
+    }									\
+     type* max_heap_##name##_max_ref(heap_t* heap) {			\
+	 return max_heap_max_ref(heap);					\
+     }									\
+     int max_heap_##name##_init_from_carray(heap_t* heap, type* array, int n) { \
+	 return max_heap_init_from_carray(heap, array, n, sizeof(type), cmp_##name); \
+     }									\
+     int max_heap_##name##_init_from_array(heap_t* heap, array_t* array) { \
+	 return max_heap_init_from_array(heap, array);			\
+     }									\
+     int max_heap_##name##_is_empty(heap_t* heap) {			\
+	 return heap_is_empty(heap);					\
+     }									\
+     type* min_heap_##name##_data(heap_t* heap, int i) {		\
+	 return (type*) heap_data(heap, i);				\
+     }									\
+     int min_heap_##name##_init(heap_t* heap, size_t height) {		\
+	 return min_heap_init(heap, height, sizeof(type), cmp_##name);	\
+     }									\
+     int min_heap_##name##_close(heap_t* heap){				\
+	 return min_heap_close(heap);					\
+     }									\
+     int min_heap_##name##_insert(heap_t* heap, type data) {		\
+	 type __n = 0;							\
+	 return min_heap_insert(heap, &__n);				\
+     }									\
+     type min_heap_##name##_pop_min(heap_t* heap) {			\
+	 type __n = 0;							\
+	 min_heap_pop_min(heap, &__n);					\
+	 return __n;							\
+     }									\
+     type min_heap_##name##_min(heap_t* heap) {				\
+	 type __n = 0;							\
+	 min_heap_min(heap, &__n);					\
+	 return __n;							\
+     }									\
+     type* min_heap_##name##_min_ref(heap_t* heap) {			\
+	 return min_heap_min_ref(heap);					\
+     }									\
+     int min_heap_##name##_init_from_carray(heap_t* heap, type* array, int n) { \
+	 return min_heap_init_from_carray(heap, array, n, sizeof(type), cmp_##name); \
+     }									\
+     int min_heap_##name##_init_from_array(heap_t* heap, array_t* array) { \
+	 return min_heap_init_from_array(heap, array);			\
+     }									\
+     int min_heap_##name##_is_empty(heap_t* heap) {			\
+	 return heap_is_empty(heap);					\
+     }									
+heap_type_definition(char, i8)
+heap_type_definition(unsigned char, u8)
+heap_type_definition(short, i16)
+heap_type_definition(unsigned short, u16)
+heap_type_definition(int, i32)
+heap_type_definition(unsigned int, u32)
+heap_type_definition(long, i64)
+heap_type_definition(unsigned long, u64)
+heap_type_definition(char, char)
+heap_type_definition(float, f32)
+heap_type_definition(double, f64)
+
+#define mgraph_type_definition(type, name)				\
+    type* mgraph_##name##_vertex_data(mgraph_t* gptr, int i);		\
+    int mgraph_##name##_init(mgraph_t* g, int flags);			\
+    int mgraph_##name##_close(mgraph_t* g);				\
+    mgraph_node_t mgraph_##name##_add_vertex(mgraph_t* g, type vertex); \
+    mgraph_node_t mgraph_##name##_add_vertices_carray(mgraph_t* g, type* vertices, int n); \
+    mgraph_node_t mgraph_##name##_add_vertices_array(mgraph_t* g, array_t* vertices); \
+    int mgraph_##name##_add_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r); \
+    int mgraph_##name##_remove_vertex(mgraph_t* g, mgraph_node_t v);	\
+    int mgraph_##name##_remove_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r); \
+    int mgraph_##name##_connected(mgraph_t* g, mgraph_node_t l, mgraph_node_t r); \
+    int mgraph_##name##_breadth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_t*, mgraph_node_t, void*), void* data); \
+    int mgraph_##name##_depth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_t*, mgraph_node_t, void*), void* data); \
+    void mgraph_##name##_print_adjacency_matrix(mgraph_t* g);		\
+    int mgraph_##name##_connected_components(mgraph_t* g);		\
+    int mgraph_##name##_topological_ordering(mgraph_t* g, list_t* out); \
+    int mgraph_##name##_dijkstra(mgraph_t* g, mgraph_node_t node, float (*weight)(mgraph_node_t, mgraph_node_t)); \
+    int mgraph_##name##_floyd(mgraph_t* g, mgraph_node_t s, int* out_T, int* out_C); \
+
+#define mgraph_type_implementation(type, name)	\
+    type* mgraph_##name##_vertex_data(mgraph_t* gptr, int i) {		\
+	return (type*) mgraph_vertex_data(gptr, i);			\
+    }									\
+    int mgraph_##name##_init(mgraph_t* g, int flags) {			\
+	return mgraph_init(g, sizeof(type), flags, cmp_##name);		\
+    }									\
+    int mgraph_##name##_close(mgraph_t* g) {				\
+	return mgraph_close(g);						\
+    }									\
+    mgraph_node_t mgraph_##name##_add_vertex(mgraph_t* g, type vertex) { \
+        type __n = vertex;						\
+	return mgraph_add_vertex(g, &__n);				\
+    }									\
+    mgraph_node_t mgraph_##name##_add_vertices_carray(mgraph_t* g, type* vertices, int n) { \
+	return mgraph_add_vertices_carray(g, (void*) vertices, n);	\
+    }									\
+    mgraph_node_t mgraph_##name##_add_vertices_array(mgraph_t* g, array_t* vertices) { \
+	return mgraph_add_vertices_array(g, vertices);			\
+    }									\
+    int mgraph_##name##_add_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r) { \
+	return mgraph_add_edge(g, l, r);				\
+    }									\
+    int mgraph_##name##_remove_vertex(mgraph_t* g, mgraph_node_t v) {	\
+	return mgraph_remove_vertex(g, v);				\
+    }									\
+    int mgraph_##name##_remove_edge(mgraph_t* g, mgraph_node_t l, mgraph_node_t r) { \
+	return mgraph_remove_edge(g, l, r);				\
+    }									\
+    int mgraph_##name##_connected(mgraph_t* g, mgraph_node_t l, mgraph_node_t r) { \
+	return mgraph_connected(g, l, r);				\
+    }									\
+    int mgraph_##name##_breadth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_t*, mgraph_node_t, void*), void* data) { \
+	return mgraph_breadth_first_search(g, node, func, data);	\
+    }									\
+    int mgraph_##name##_depth_first_search(mgraph_t* g, mgraph_node_t node, void (*func)(mgraph_t*, mgraph_node_t, void*), void* data) { \
+	return mgraph_depth_first_search(g, node, func, data);		\
+    }									\
+    void mgraph_##name##_print_adjacency_matrix(mgraph_t* g) {		\
+	return mgraph_print_adjacency_matrix(g, print_##name);		\
+    }									\
+    int mgraph_##name##_connected_components(mgraph_t* g) {		\
+	return mgraph_connected_components(g);				\
+    }									\
+    int mgraph_##name##_topological_ordering(mgraph_t* g, list_t* out) { \
+	return mgraph_topological_ordering(g, out);			\
+    }									\
+    int mgraph_##name##_dijkstra(mgraph_t* g, mgraph_node_t node, float (*weight)(mgraph_node_t, mgraph_node_t)) { \
+	return mgraph_dijkstra(g, node, weight);			\
+    }									\
+    int mgraph_##name##_floyd(mgraph_t* g, mgraph_node_t s, int* out_T, int* out_C) { \
+	return mgraph_floyd(g, s, out_T, out_C);			\
+    }
+mgraph_type_definition(char, i8)
+mgraph_type_definition(unsigned char, u8)
+mgraph_type_definition(short, i16)
+mgraph_type_definition(unsigned short, u16)
+mgraph_type_definition(int, i32)
+mgraph_type_definition(unsigned int, u32)
+mgraph_type_definition(long, i64)
+mgraph_type_definition(unsigned long, u64)
+mgraph_type_definition(char, char)
+mgraph_type_definition(float, f32)
+mgraph_type_definition(double, f64)
+
+#define lgraph_type_definition(type, name)				\
+    type* lgraph_##name##_vertex_data(lgraph_t* gptr, int i);		\
+    int lgraph_##name##_init(lgraph_t* g, int flags);			\
+    int lgraph_##name##_close(lgraph_t* g);				\
+    lgraph_node_t lgraph_##name##_add_vertex(lgraph_t* g, type vertex); \
+    lgraph_node_t lgraph_##name##_add_vertices_carray(lgraph_t* g, type* vertices, int n); \
+    lgraph_node_t lgraph_##name##_add_vertices_array(lgraph_t* g, array_t* vertices); \
+    int lgraph_##name##_add_edge(lgraph_t* g, lgraph_node_t l, lgraph_node_t r); \
+    int lgraph_##name##_remove_vertex(lgraph_t* g, lgraph_node_t v);	\
+    int lgraph_##name##_remove_edge(lgraph_t* g, lgraph_node_t l, lgraph_node_t r); \
+    int lgraph_##name##_connected(lgraph_t* g, lgraph_node_t l, lgraph_node_t r); \
+    int lgraph_##name##_breadth_first_search(lgraph_t* g, lgraph_node_t node, void (*func)(lgraph_t*, lgraph_node_t, void*), void* data); \
+    int lgraph_##name##_depth_first_search(lgraph_t* g, lgraph_node_t node, void (*func)(lgraph_t*, lgraph_node_t, void*), void* data); \
+    int lgraph_##name##_connected_components(lgraph_t* g);		\
+    int lgraph_##name##_topological_ordering(lgraph_t* g, list_t* out); \
+    int lgraph_##name##_dijkstra(lgraph_t* g, lgraph_node_t node, float (*weight)(lgraph_node_t, lgraph_node_t)); \
+    int lgraph_##name##_floyd(lgraph_t* g, lgraph_node_t s, int* out_T, int* out_C); \
+    void lgraph_##name##_adjacency_lists_print(lgraph_t* g);
+
+#define lgraph_type_implementation(type, name)	\
+    type* lgraph_##name##_vertex_data(lgraph_t* gptr, int i) {		\
+	return (type*) lgraph_vertex_data(gptr, i);			\
+    }									\
+    int lgraph_##name##_init(lgraph_t* g, int flags) {			\
+	return lgraph_init(g, sizeof(type), flags, cmp_##name);		\
+    }									\
+    int lgraph_##name##_close(lgraph_t* g) {				\
+	return lgraph_close(g);						\
+    }									\
+    lgraph_node_t lgraph_##name##_add_vertex(lgraph_t* g, type vertex) { \
+        type __n = vertex;						\
+	return lgraph_add_vertex(g, &__n);				\
+    }									\
+    lgraph_node_t lgraph_##name##_add_vertices_carray(lgraph_t* g, type* vertices, int n) { \
+	return lgraph_add_vertices_carray(g, (void*) vertices, n);	\
+    }									\
+    lgraph_node_t lgraph_##name##_add_vertices_array(lgraph_t* g, array_t* vertices) { \
+	return lgraph_add_vertices_array(g, vertices);			\
+    }									\
+    int lgraph_##name##_add_edge(lgraph_t* g, lgraph_node_t l, lgraph_node_t r) { \
+	return lgraph_add_edge(g, l, r);				\
+    }									\
+    int lgraph_##name##_remove_vertex(lgraph_t* g, lgraph_node_t v) {	\
+	return lgraph_remove_vertex(g, v);				\
+    }									\
+    int lgraph_##name##_remove_edge(lgraph_t* g, lgraph_node_t l, lgraph_node_t r) { \
+	return lgraph_remove_edge(g, l, r);				\
+    }									\
+    int lgraph_##name##_connected(lgraph_t* g, lgraph_node_t l, lgraph_node_t r) { \
+	return lgraph_connected(g, l, r);				\
+    }									\
+    int lgraph_##name##_breadth_first_search(lgraph_t* g, lgraph_node_t node, void (*func)(lgraph_t*, lgraph_node_t, void*), void* data) { \
+	return lgraph_breadth_first_search(g, node, func, data);	\
+    }									\
+    int lgraph_##name##_depth_first_search(lgraph_t* g, lgraph_node_t node, void (*func)(lgraph_t*, lgraph_node_t, void*), void* data) { \
+	return lgraph_depth_first_search(g, node, func, data);		\
+    }									\
+    int lgraph_##name##_connected_components(lgraph_t* g) {		\
+	return lgraph_connected_components(g);				\
+    }									\
+    int lgraph_##name##_topological_ordering(lgraph_t* g, list_t* out) { \
+	return lgraph_topological_ordering(g, out);			\
+    }									\
+    int lgraph_##name##_dijkstra(lgraph_t* g, lgraph_node_t node, float (*weight)(lgraph_node_t, lgraph_node_t)) { \
+	return lgraph_dijkstra(g, node, weight);			\
+    }									\
+    int lgraph_##name##_floyd(lgraph_t* g, lgraph_node_t s, int* out_T, int* out_C) { \
+	return lgraph_floyd(g, s, out_T, out_C);			\
+    }									\
+    void lgraph_##name##_adjacency_lists_print(lgraph_t* g) {		\
+	lgraph_adjacency_lists_print(g, print_##name);			\
+    }
+
+lgraph_type_definition(char, i8)
+lgraph_type_definition(unsigned char, u8)
+lgraph_type_definition(short, i16)
+lgraph_type_definition(unsigned short, u16)
+lgraph_type_definition(int, i32)
+lgraph_type_definition(unsigned int, u32)
+lgraph_type_definition(long, i64)
+lgraph_type_definition(unsigned long, u64)
+lgraph_type_definition(char, char)
+lgraph_type_definition(float, f32)
+lgraph_type_definition(double, f64)
 #endif

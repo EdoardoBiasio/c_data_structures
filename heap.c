@@ -208,3 +208,16 @@ int heap_is_empty(heap_t* heap) {
     return heap->size == 0;
 }
 
+							
+heap_type_implementation(char, i8)
+heap_type_implementation(unsigned char, u8)
+heap_type_implementation(short, i16)
+heap_type_implementation(unsigned short, u16)
+heap_type_implementation(int, i32)
+heap_type_implementation(unsigned int, u32)
+heap_type_implementation(long, i64)
+heap_type_implementation(unsigned long, u64)
+heap_type_implementation(char, char)
+heap_type_implementation(float, f32)
+heap_type_implementation(double, f64)
+

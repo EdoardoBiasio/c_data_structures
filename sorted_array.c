@@ -54,7 +54,7 @@ int sorted_array_bsearch(sorted_array_t* array, void* key, void* out) {
 	res = array->cmp(key, (char*) array->data + i * array->type_size);
 	if (res == 0) {
 	    memcpy(out, (char*) array->data + i * array->type_size, array->type_size);
-	    return 0;
+	    return i;
 	}
 	if (res > 0)
 	    l = i + 1;

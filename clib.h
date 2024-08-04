@@ -346,6 +346,8 @@ typedef heap_t max_heap_t;
 #define heap_right(i) ((i * 2) + 2)
 #define heap_parent(i) (int)((i - 1) / 2)
 
+#define heap_data(heap, i)(char*) (heap)->data + (i) * (heap)->type_size
+
 int heap_init(heap_t* heap, size_t height, size_t type_size, int (*cmp)(void*, void*), int type);
 int heap_close(heap_t* heap);
 int heap_insert(heap_t* heap, void* data, int type);
@@ -440,7 +442,7 @@ typedef struct lgraph_s {
 } lgraph_t;
 
 typedef long int lgraph_node_t;
-
+#define lgraph_vertex_data(gptr, i) (((char*)array_at_ref(&(gptr)->vertices, i)) + sizeof(lgraph_vertex_t))
 int lgraph_init(lgraph_t* g, int vertex_size, int flags, int (*cmp)(void*, void*));
 int lgraph_close(lgraph_t* g);
 lgraph_node_t lgraph_add_vertex(lgraph_t* g, void* vertex);

@@ -758,3 +758,26 @@ void lgraph_adjacency_lists_print(lgraph_t* g, void (*print)(void*)) {
     }
 }
 
+mgraph_type_implementation(char, i8)
+mgraph_type_implementation(unsigned char, u8)
+mgraph_type_implementation(short, i16)
+mgraph_type_implementation(unsigned short, u16)
+mgraph_type_implementation(int, i32)
+mgraph_type_implementation(unsigned int, u32)
+mgraph_type_implementation(long, i64)
+mgraph_type_implementation(unsigned long, u64)
+mgraph_type_implementation(char, char)
+mgraph_type_implementation(float, f32)
+mgraph_type_implementation(double, f64)
+    
+lgraph_type_implementation(char, i8)
+lgraph_type_implementation(unsigned char, u8)
+lgraph_type_implementation(short, i16)
+lgraph_type_implementation(unsigned short, u16)
+lgraph_type_implementation(int, i32)
+lgraph_type_implementation(unsigned int, u32)
+lgraph_type_implementation(long, i64)
+lgraph_type_implementation(unsigned long, u64)
+lgraph_type_implementation(char, char)
+lgraph_type_implementation(float, f32)
+lgraph_type_implementation(double, f64)
