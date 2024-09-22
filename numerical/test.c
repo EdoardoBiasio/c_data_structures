@@ -1,4 +1,5 @@
 #include "numerical.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -16,6 +17,11 @@ int main(int argc, char** argv) {
 	2, 6, -9, 4,
 	-1, 5, 4, -2,
 	5, 0, 1, 3 };
+    sparse_matrix_coo_t smcoo;
+    sparse_matrix_csc_t smcsc;
+    list_t list;
+    list_node_t *el;
+    singular_value_tuple_t* tt;
     A.n = 4;
     b.n = 4;
     b.data = calloc(sizeof(f64), 4);
@@ -30,6 +36,15 @@ int main(int argc, char** argv) {
     B.data = calloc(sizeof(f64), 9);
     memcpy(B.data, bdata, 9 * sizeof(f64));
     memcpy(A.data, data, 16 * sizeof(f64));
+    dense_matrix_svd(&A, 0.000001, 10000000000, &list, NULL, NULL);
+    el = list.head;
+    while(el) {
+	tt = list_node_data(el);
+	printf("%f ", tt->svalue);
+	el = el->next;
+    }
+    printf("\n");
+    
     printf("%d\n", dense_matrix_positive_definite_s(&B));
     dense_matrix_cholesky_factorization(&B);
     dense_matrix_print(&B);
@@ -39,5 +54,18 @@ int main(int argc, char** argv) {
     dense_matrix_permutation_from_array(&w, &Q);
     dense_matrix_LU_solution_full_pivoting(&A, &P, &Q, &b, &x2);
     vector_print(&x2);
+
+    sparse_matrix_coo_create(&smcoo, 5, 4);
+    sparse_matrix_coo_insert(&smcoo, 0.542, 2, 0);
+    sparse_matrix_coo_insert(&smcoo, 2.532, 1, 3);
+    sparse_matrix_coo_insert(&smcoo, -2.21, 3, 3);
+    sparse_matrix_coo_insert(&smcoo, 0.23, 3, 0);
+    sparse_matrix_coo_insert(&smcoo, 542.23, 4, 1);
+    sparse_matrix_coo_insert(&smcoo, -431.0, 0, 2);
+    sparse_matrix_coo_print(&smcoo);
+    sparse_matrix_csc_create_from_coo(&smcsc, &smcoo);
+    sparse_matrix_coo_close(&smcoo);
+    sparse_matrix_csc_print(&smcsc);
+    sparse_matrix_csc_close(&smcsc);
     return 0;
 }

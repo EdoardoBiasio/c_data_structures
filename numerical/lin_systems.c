@@ -288,6 +288,156 @@ int dense_matrix_backward_substitution(dense_matrix_t* U, vector_t* b, vector_t*
     }
     return 0;
 }
+
+f64 vector_norm(vector_t* v) {
+    int i;
+    f64 norm = 0;
+    for (i = 0; i < v->n; i++)
+	norm += fabs(v->data[i]) * fabs(v->data[i]);
+    return sqrt(norm);
+}
+
+int vector_normalize(vector_t* v) {
+    int i;
+    f64 norm = vector_norm(v);
+    for (i = 0; i < v->n; i++)
+	v->data[i] /= norm;
+    return 0;
+}
+
+int vector_copy(vector_t* dest, vector_t* src) {
+    if (dest->n != src->n)
+	dest->data = realloc(dest->data, sizeof(f64) * src->n);
+    dest->n = src->n;
+    memcpy(dest->data, src->data, sizeof(f64) * src->n);
+    return 0;
+}
+
+int vector_subtract(vector_t* lhs, vector_t* rhs, vector_t* dest) {
+    int i;
+    if (!dest->data)
+	vector_create_zeros(dest, lhs->n);
+    for (i = 0; i < lhs->n; i++)
+	dest->data[i] = lhs->data[i] - rhs->data[i];
+    return 0;
+}
+
+f64 dense_matrix_svd_power_iteration(dense_matrix_t* A, vector_t* b0, f64 tol, int maxiter, int* niter, vector_t* v) {
+    int i;
+    vector_t b, temp;
+    f64 oldsv, sv;
+    i = 0;
+    temp.data = NULL;
+    vector_create_zeros(&b, A->n);
+    vector_create_zeros(&temp, A->n);
+    if (!v->data)
+	vector_create_zeros(v, A->n);
+    dense_matrix_multiply_vector(A, b0, &b);
+    vector_normalize(&b);
+    dense_matrix_multiply_vector(A, &b, v);
+    sv = vector_norm(v);
+    do {
+	oldsv =sv;
+	dense_matrix_multiply_vector(A, &b, &temp);
+	vector_copy(&b, &temp);
+	vector_normalize(&b);
+	dense_matrix_multiply_vector(A, &b, v);
+	sv = vector_norm(v);
+	
+	i++;
+    } while (fabs(sv - oldsv) > tol && i < maxiter);
+    if (niter)
+	*niter = i;
+    vector_copy(v, &b);
+    vector_close(&b);
+    if (i >= maxiter)
+	return -1;
+
+
+    return sv;
+}
+
+void vector_randomize(vector_t* v) {
+    int i;
+    for (i = 0; i < v->n; i++) {
+	v->data[i] = 1 / sqrt(v->n);
+    }
+}
+void dense_matrix_multiply_constant(dense_matrix_t* A, f64 t) {
+    int i, j;
+    for (i = 0; i < A->n; i++)
+	for (j = 0; j < A->m; j++)
+	    A->data[i * A->m + j] *= t;
+}
+
+void dense_matrix_subtract(dense_matrix_t* dest, dense_matrix_t* src) {
+    int i, j;
+    for (i = 0; i < dest->n; i++)
+	for (j = 0; j < dest->m; j++)
+	    dest->data[i * dest->m + j] -= src->data[i * dest->m + j];
+}
+
+void vector_outer_product(vector_t* lhs, vector_t* rhs, dense_matrix_t* out)  {
+    int i, j;
+    if (!out->data)
+	dense_matrix_create_zeros(out, lhs->n, rhs->n);
+    for (i = 0; i < lhs->n; i++) {
+	for (j = 0; j < rhs->n; j++) {
+	    out->data[i * rhs->n + j] = lhs->data[i] * rhs->data[j];
+	}
+    }
+}
+void dense_matrix_copy(dense_matrix_t* dest, dense_matrix_t* src) {
+   int i, j;
+    for (i = 0; i < dest->n; i++)
+	for (j = 0; j < dest->m; j++)
+	    dest->data[i * dest->m + j] = src->data[i * dest->m + j];
+}
+								 
+
+/*    builtin.com/articles/svd-algorithm */
+
+int dense_matrix_svd(dense_matrix_t* A, f64 tol, int maxiter, list_t* out, dense_matrix_t* U, dense_matrix_t* V) {
+    int k, i;
+    dense_matrix_t temp, mout;
+    list_t values;
+    list_node_t* t;
+    singular_value_tuple_t *tt, tnew;
+    
+    vector_t b, v, u;
+    vector_create_zeros(&b, A->n);
+    vector_create_zeros(&u, A->n);
+    list_init(&values, sizeof(singular_value_tuple_t), NULL);
+    dense_matrix_create_zeros(&temp, A->n, A->m);
+    dense_matrix_create_zeros(&mout, A->n, A->m);
+    k = (A->n < A->m) ? A->n : A->m;
+    for (i = 0; i < k; i++) {
+	dense_matrix_copy(&temp, A);
+	if (values.head != NULL) {
+	    t = values.head;
+	    while (t) {
+		tt = list_node_data(t);
+		vector_outer_product(&tt->u, &tt->v, &mout);
+		dense_matrix_multiply_constant(&mout, tt->svalue);
+		dense_matrix_subtract(&temp, &mout);
+		t = t->next;
+	    }
+	}
+	vector_randomize(&b);
+	dense_matrix_svd_power_iteration(A, &b, tol, maxiter, NULL, &u);
+	vector_create_zeros(&tnew.u, A->n);
+	vector_create_zeros(&tnew.v, A->n);
+	vector_copy(&tnew.u, &u);
+	dense_matrix_multiply_vector(A, &u, &v);
+	tnew.svalue = vector_norm(&v);
+	vector_normalize(&v);
+	vector_copy(&tnew.v, &v);
+	list_push_back(&values, &tnew);
+    }
+    *out = values;
+    return 0;
+}
+
 int dense_matrix_strict_diagonal_dominance(dense_matrix_t* A, int type) {
     int i, j;
     f64 sum;
@@ -351,5 +501,104 @@ int dense_matrix_ndiagonal(dense_matrix_t* A, int n) {
 	}
     }
     return 1;
+}
+
+int sparse_matrix_coo_element_cmp(void* left, void* right) {
+    sparse_matrix_coo_element_t* L, *R;
+    L = left; R = right;
+    if (L->col == R->col)
+	return L->row - R->row;
+    return L->col - R->col;
+}
+
+int sparse_matrix_coo_create(sparse_matrix_coo_t* matrix, int n, int m) {
+    if (!matrix)
+	return -1;
+    if (array_init(&matrix->elements, sizeof(sparse_matrix_coo_element_t), 4, sparse_matrix_coo_element_cmp) < 0)
+	return -1;
+    matrix->n = n;
+    matrix->m = m;
+    return 0;
+}
+
+int sparse_matrix_coo_insert(sparse_matrix_coo_t* matrix, f64 v, int row, int col) {
+    sparse_matrix_coo_element_t new;
+    if (!matrix)
+	return -1;
+    new.value = v;
+    new.row = row; new.col = col;
+    array_push_back(&matrix->elements, &new);
+    return 0;
+}
+void sparse_matrix_coo_print(sparse_matrix_coo_t* matrix) {
+    int i = 0;
+    sparse_matrix_coo_element_t temp;
+    if (matrix) {
+
+	for (i = 0; i < matrix->elements.len; i++) {
+	    array_at(&matrix->elements, i, &temp);
+	    printf("(%d, %d, v: %f)\n", temp.row, temp.col, temp.value);
+	}
+    }
+}
+
+int sparse_matrix_coo_close(sparse_matrix_coo_t* matrix) {
+    if (!matrix)
+	return -1;
+    array_close(&matrix->elements);
+    return 0;
+}
+int sparse_matrix_csc_create_from_coo(sparse_matrix_csc_t* new_matrix, sparse_matrix_coo_t* old_matrix) {
+    int i, j;
+    int old_col;
+    sparse_matrix_coo_element_t temp;
+    if (!new_matrix || !old_matrix)
+	return -1;
+    array_quicksort(&old_matrix->elements, 0, old_matrix->elements.len - 1);
+    new_matrix->row_idx = calloc(sizeof(int), old_matrix->elements.len);
+    new_matrix->col_ptr = calloc(sizeof(int), old_matrix->m + 1);
+    new_matrix->elements = calloc(sizeof(f64), old_matrix->elements.len);
+    new_matrix->m = old_matrix->m; new_matrix->n = old_matrix->n;
+    new_matrix->nvalues = old_matrix->elements.len;
+    old_col = -1;
+    j = 0;
+    for (i = 0; i < old_matrix->elements.len; i++) {
+	array_at(&old_matrix->elements, i, &temp);
+	if (temp.col > old_col) {
+	    while (temp.col > old_col) {
+		new_matrix->col_ptr[j] = i;
+		old_col++;
+		j++;
+	    }
+	}
+	new_matrix->elements[i] = temp.value;
+	new_matrix->row_idx[i] = temp.row;
+    }
+    new_matrix->col_ptr[j] = old_matrix->m + 1;
+    return 0;
+}
+void sparse_matrix_csc_print(sparse_matrix_csc_t* matrix) {
+    int i;
+    printf("values: ");
+    for (i = 0; i < matrix->nvalues; i++) {
+	printf("%f ", matrix->elements[i]);
+    }
+    printf("\nrow indices: ");
+    for (i = 0; i < matrix->nvalues; i++) {
+	printf("%d ", matrix->row_idx[i]);
+    }
+    printf("\ncolumn ptrs: ");
+    for (i = 0; i < matrix->m + 1; i++)
+	printf("%d ", matrix->col_ptr[i]);
+    printf("\n");
+}
+int sparse_matrix_csc_close(sparse_matrix_csc_t* matrix) {
+    if (!matrix)
+	return -1;
+    free(matrix->elements);
+    free(matrix->row_idx);
+    free(matrix->col_ptr);
+    matrix->n = matrix->m = matrix->nvalues = 0;
+    return 0;
 }
 
