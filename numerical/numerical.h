@@ -4,7 +4,7 @@
 #include <math.h>
 #include <float.h>
 
-#include "../data_structures/clib.h"
+#include "../data_structures/ds.h"
 
 typedef double f64;
 typedef float f32;
@@ -51,8 +51,10 @@ int dense_matrix_multiply(dense_matrix_t* A, dense_matrix_t* B, dense_matrix_t* 
 int dense_matrix_multiply_vector(dense_matrix_t* A, vector_t* b, vector_t* c);
 int dense_matrix_forward_substitution(dense_matrix_t* L, vector_t* b, vector_t* x);
 int dense_matrix_backward_substitution(dense_matrix_t* U, vector_t* b, vector_t* x);
-f64 dense_matrix_svd_power_iteration(dense_matrix_t* A, vector_t* b0, f64 tol, int maxiter, int *niter, vector_t* v);
-int dense_matrix_svd(dense_matrix_t* A, f64 tol, int maxiter, list_t* out, dense_matrix_t* U, dense_matrix_t* V);
+int dense_matrix_svd(dense_matrix_t* A, f64 tol, int maxiter, dense_matrix_t* S, dense_matrix_t* U, dense_matrix_t* V);
+int dense_matrix_svd_diagonalizable(dense_matrix_t* A, f64 tol, int maxiter, list_t* out, dense_matrix_t* U, dense_matrix_t* V);
+f64 dense_matrix_condition(dense_matrix_t* A);
+
 typedef struct {
     f64 svalue;
     vector_t v, u;

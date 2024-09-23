@@ -1,4 +1,4 @@
-#include "clib.h"
+#include "ds.h"
 #include <string.h>
 
 int lstack_init(lstack_t* stack, int type_size, int (*cmp)(void*, void*)) {

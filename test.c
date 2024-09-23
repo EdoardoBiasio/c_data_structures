@@ -1,5 +1,5 @@
-#include "numerical.h"
-
+#include "numerical/numerical.h"
+#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
     list_t list;
     list_node_t *el;
     singular_value_tuple_t* tt;
+    dense_matrix_t S, U, V;
     A.n = 4;
     b.n = 4;
     b.data = calloc(sizeof(f64), 4);
@@ -34,17 +35,19 @@ int main(int argc, char** argv) {
     B.n = 3;
     B.m = 3;
     B.data = calloc(sizeof(f64), 9);
+    srand(time(NULL));
     memcpy(B.data, bdata, 9 * sizeof(f64));
     memcpy(A.data, data, 16 * sizeof(f64));
-    dense_matrix_svd(&A, 0.000001, 10000000000, &list, NULL, NULL);
-    el = list.head;
-    while(el) {
-	tt = list_node_data(el);
-	printf("%f ", tt->svalue);
-	el = el->next;
-    }
-    printf("\n");
-    
+    dense_matrix_svd(&A, 0.000001, 10000000, &S, &U, &V);
+    printf("S: \n");
+    dense_matrix_print(&S);
+    printf("U: \n");
+    dense_matrix_print(&U);
+    printf("V: \n");
+    dense_matrix_print(&V);
+
+    printf("condition: %f\n", dense_matrix_condition(&A));
+   
     printf("%d\n", dense_matrix_positive_definite_s(&B));
     dense_matrix_cholesky_factorization(&B);
     dense_matrix_print(&B);

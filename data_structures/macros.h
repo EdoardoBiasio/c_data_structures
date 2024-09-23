@@ -1,7 +1,6 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-
 #define array_type_definition(type, name)				\
     int array_##name##_init(array_t* array, int start_capacity);	\
     int array_##name##_close(array_t* array);				\

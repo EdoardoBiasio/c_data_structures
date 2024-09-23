@@ -1,4 +1,4 @@
-#include "../data_structures/clib.h"
+#include "ds.h"
 util_type_implementation(char, i8)
 util_type_implementation(unsigned char, u8)
 util_type_implementation(short, i16)

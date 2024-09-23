@@ -1,4 +1,4 @@
-#include "clib.h"
+#include "ds.h"
 #include <stdlib.h>
 
 int lbinary_tree_init(lbinary_tree_t* tree, int type_size, int (*cmp)(void*, void*)) {

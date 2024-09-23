@@ -1,4 +1,4 @@
-TARGET=libclib_ds.a
+TARGET=libclib_num.a
 BUILD_DIR=build
 SRC=$(wildcard *.c)
 OBJ=$(patsubst %.c, %.o, $(SRC))

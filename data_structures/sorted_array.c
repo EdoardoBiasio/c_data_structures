@@ -1,4 +1,4 @@
-#include "clib.h"
+#include "ds.h"
 #include <string.h>
 
 int sorted_array_insert(sorted_array_t* array, void* element) {

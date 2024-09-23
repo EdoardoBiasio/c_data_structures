@@ -1,4 +1,4 @@
-#include "clib.h"
+#include "ds.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -241,6 +241,7 @@ int dlist_min(dlist_t* list, void* out) {
 	    imin = i;
 	}
 	i++;
+	h = h->next;
     }
     if (out)
 	memcpy(out, dlist_node_data(min), list->type_size);
@@ -258,6 +259,7 @@ dlist_node_t* dlist_min_node(dlist_t* list) {
     while (h) {
 	if (list->cmp(dlist_node_data(h), dlist_node_data(min)) < 0)
 	    min = h;
+	h = h->next;
     }
     return min;
 }
@@ -278,6 +280,7 @@ int dlist_max(dlist_t* list, void* out) {
 	    imax = i;
 	}
 	i++;
+	h = h->next;
     }
     if (out)
 	memcpy(out, dlist_node_data(max), list->type_size);
@@ -294,6 +297,7 @@ dlist_node_t* dlist_max_node(dlist_t* list) {
     while (h) {
 	if (list->cmp(dlist_node_data(h), dlist_node_data(max)) > 0)
 	    max = h;
+	h = h->next;
     }
     return max;
 }
