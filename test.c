@@ -1,8 +1,18 @@
 #include "numerical/numerical.h"
+#include "visualization/visualization.h"
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+f64 quad(f64 x) {
+    return 10 * tan(x)+ 50;
+}
+
+f64 logarithm(f64 x) {
+    return 10 * log(x);
+}
+
 int main(int argc, char** argv) {
     dense_matrix_t A, Q, P, B;
     vector_t b, x1, x2, b1;
@@ -23,6 +33,23 @@ int main(int argc, char** argv) {
     list_node_t *el;
     singular_value_tuple_t* tt;
     dense_matrix_t S, U, V;
+    plot_2D_t plot;
+    f64 zero;
+    plot_2D_create(&plot, 500, 400);
+    plot_2D_set_x_axis(&plot, 0, 10, 0.01, 0);
+    plot_2D_set_y_axis(&plot, 0, 100, 1, 0);
+    plot_2D_set_x_axis_label(&plot, "x");
+    plot_2D_set_y_axis_label(&plot, "y");
+    plot_2D_show_x_axis_limits(&plot);
+    plot_2D_show_y_axis_limits(&plot);
+    
+    plot_2D_add_function(&plot, quad, 0);
+    plot_2D_add_function(&plot, logarithm, 0x0010FF);
+    plot_2D_add_function_legend(&plot, "tan(x)", "ln(x)");
+    function_zeros_chords_method_residue(logarithm, 0.001, 10, 4.4, 100000000, 0.00001, &zero, NULL);
+    printf("(%f, %f)\n", zero, logarithm(zero));
+    plot_2D_add_point(&plot, zero, logarithm(zero), 0xFF0000);
+    plot_2D_display(&plot);    
     A.n = 4;
     b.n = 4;
     b.data = calloc(sizeof(f64), 4);
@@ -70,5 +97,6 @@ int main(int argc, char** argv) {
     sparse_matrix_coo_close(&smcoo);
     sparse_matrix_csc_print(&smcsc);
     sparse_matrix_csc_close(&smcsc);
+
     return 0;
 }

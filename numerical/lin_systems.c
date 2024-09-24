@@ -327,11 +327,11 @@ f64 eigen_value(dense_matrix_t* A, vector_t* v) {
     vector_t Av;
     int i;
     f64 sum;
-    vector_create_zeros(&Av, A->n);
     dense_matrix_multiply_vector(A, v, &Av);
     for (i = 0; i < A->n; i++) {
 	sum += Av.data[i] / v->data[i]; 
     }
+    vector_close(&Av);
     return sum / A->n;
 }
 
@@ -341,8 +341,6 @@ f64 dense_matrix_svd_power_iteration(dense_matrix_t* A, vector_t* b0, f64 tol, i
     f64 oldsv, sv;
     i = 0;
     temp.data = NULL;
-    vector_create_zeros(&b, A->n);
-    vector_create_zeros(&temp, A->n);
     if (!v->data)
 	vector_create_zeros(v, A->n);
     dense_matrix_multiply_vector(A, b0, &b);
@@ -352,6 +350,7 @@ f64 dense_matrix_svd_power_iteration(dense_matrix_t* A, vector_t* b0, f64 tol, i
 	oldsv =sv;
 	dense_matrix_multiply_vector(A, &b, &temp);
 	vector_copy(&b, &temp);
+	vector_close(&temp);
 	vector_normalize(&b);
 	sv = eigen_value(A, &b);
 	
@@ -427,13 +426,11 @@ int dense_matrix_svd(dense_matrix_t* A, f64 tol, int maxiter, dense_matrix_t* S,
     list_t list;
     list_node_t *t;
     singular_value_tuple_t *tt;
-    dense_matrix_create_zeros(U, A->n, A->m);
     dense_matrix_create_zeros(V, A->n, A->m);
     dense_matrix_create_zeros(S, A->n, A->m);
     dense_matrix_create_zeros(&At, A->n, A->m);
     dense_matrix_copy(&At, A);
     dense_matrix_transpose(&At);
-    dense_matrix_create_zeros(&B, A->n, A->m);
     dense_matrix_multiply(&At, A, &B);
     dense_matrix_svd_diagonalizable(&B, tol, maxiter, &list, V, NULL);
     dense_matrix_multiply(A, V, &B);
@@ -453,6 +450,8 @@ int dense_matrix_svd(dense_matrix_t* A, f64 tol, int maxiter, dense_matrix_t* S,
     dense_matrix_multiply(&At, &B, U);
     dense_matrix_transpose(U);
     dense_matrix_transpose(V);
+    dense_matrix_close(&B);
+    dense_matrix_close(&At);
     return 0;
 }
 
@@ -471,7 +470,6 @@ int dense_matrix_svd_diagonalizable(dense_matrix_t* A, f64 tol, int maxiter, lis
     
     vector_t b, v, u;
     dense_matrix_create_zeros(&At, A->n, A->m);
-    dense_matrix_create_zeros(&temp, A->n, A->m);
     dense_matrix_copy(&At, A);
     dense_matrix_transpose(&At);
 
@@ -507,9 +505,14 @@ int dense_matrix_svd_diagonalizable(dense_matrix_t* A, f64 tol, int maxiter, lis
 	tnew.svalue = vector_norm(&v);
 	vector_normalize(&v);
 	vector_copy(&tnew.v, &v);
+	vector_close(&v);
 	list_push_back(&values, &tnew);
     }
-    
+    vector_close(&u);
+    vector_close(&b);
+    dense_matrix_close(&At);
+    dense_matrix_close(&mout);
+    dense_matrix_close(&temp);
     *out = values;
     i = 0;
     t = values.head;
@@ -536,10 +539,11 @@ dense_matrix_t At, B;
     dense_matrix_create_zeros(&At, A->n, A->m);
     dense_matrix_copy(&At, A);
     dense_matrix_transpose(&At);
-    dense_matrix_create_zeros(&B, A->n, A->m);
+    
     dense_matrix_multiply(&At, A, &B);
     dense_matrix_svd_diagonalizable(&B, 1e-10, 1000000, &list, NULL, NULL);
-
+    dense_matrix_close(&At);
+    dense_matrix_close(&B);
     list_min(&list, &tmin);
     list_max(&list, &tmax);
     res = sqrt(tmax.svalue / tmin.svalue);
